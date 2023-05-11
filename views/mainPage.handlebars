@@ -14,8 +14,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-      </tr>
+      {{#each theadData}}
+        {{>thead ID=ID Name=Name Position=Position Department=Department Email=Email}}
+      {{/each}}
     </tbody>
   </table>
 
