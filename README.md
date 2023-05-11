@@ -108,7 +108,7 @@ For example, if I were to submit only the handlebar file for bsg_people, I would
 
 **Q. _Should this particular field in my form be a textbox/textarea/drop-down/some new UX style fancy element?_**
 
-\*A.\*\* This is your choice. Though the user should easily be able to understand how to use it (if it's too difficult you could also provide tooltips about how to use it). Your reviewers/graders might disagree and you should be able to justify the usage of one over the other.
+**A.** This is your choice. Though the user should easily be able to understand how to use it (if it's too difficult you could also provide tooltips about how to use it). Your reviewers/graders might disagree and you should be able to justify the usage of one over the other.
 
 **Q. _How "done" does the design of the HTML pages need to be for this step?_**
 
