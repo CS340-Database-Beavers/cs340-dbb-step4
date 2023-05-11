@@ -1,0 +1,18 @@
+[
+  {
+    "id": "name",
+    "label": "Name:"
+  },
+  {
+    "id": "position",
+    "label": "Position:"
+  },
+  {
+    "id": "department",
+    "label": "Department:"
+  },
+  {
+    "id": "email",
+    "label": "Email:"
+  }
+]
