@@ -1,7 +1,6 @@
 /*
     SETUP for a simple webapp
 */
-var theadData = require("./theadData.json");
 // Express
 var fs = require("fs");
 var express = require("express"); // We are using the express library for the web server
@@ -10,6 +9,8 @@ var app = express(); // We need to instantiate an express object to interact wit
 PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to change in the future
 // Database
 var db = require("./db-connector");
+var theadData = require("./theadData.json");
+var addEmpInputs = require("./addEmpInputs.json");
 //Handlebars
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
@@ -19,7 +20,9 @@ app.use(express.json());
     ROUTES
 */
 app.get("/", function (req, res) {
-  res.status(200).render("mainPage", { theadData: theadData });
+  res
+    .status(200)
+    .render("mainPage", { theadData: theadData, addEmpInputs: addEmpInputs });
 });
 
 app.get("*", function (req, res) {
