@@ -14,13 +14,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>John Doe</td>
-        <td>Developer</td>
-        <td>Marketing</td>
-        <td>john.doe@email.com</td>
-      </tr>
+      {{#each theadData}}
+        {{>thead ID=ID Name=Name Position=Position Department=Department Email=Email}}
+      {{/each}}
     </tbody>
   </table>
 
