@@ -22,18 +22,9 @@
 
   <form>
     <h2>Add Employee</h2>
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" />
-
-    <label for="position">Position:</label>
-    <input type="text" id="position" name="position" />
-
-    <label for="department">Department:</label>
-    <input type="text" id="department" name="department" />
-
-    <label for="email">Email:</label>
-    <input type="text" id="email" name="email" />
-
+    {{#each addEmpInputs}}
+      {{>addEmpInputs id=id label=label}}
+    {{/each}}
     <input type="submit" value="Submit" />
   </form>
 </div>
