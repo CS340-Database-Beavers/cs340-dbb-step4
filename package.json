@@ -2,16 +2,18 @@
   "name": "cs340-dbb-step3",
   "version": "1.0.0",
   "description": "Front End Development for CS340 Group 19 \"Database Beavers\"",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prestart": "npm run build",
+    "start": "node app.js",
+    "build": "handlebars"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CS340-Database-Beavers/cs340-dbb-step3.git"
   },
-  "author": "humberj@oregonstate.edu",
-  "license": "ISC",
+  "author": "",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/CS340-Database-Beavers/cs340-dbb-step3/issues"
   },

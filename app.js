@@ -21,7 +21,7 @@ app.get('*', function (req, res) {
 	res.status(404).render('404');
 });
 
-app.listen(port, function (err) {
+app.listen(PORT, function (err) {
 	if(err) throw err;
-	console.log('== Server is listening on port', port);
+	console.log('== Server is listening on port', PORT);
 });
