@@ -1,6 +1,9 @@
 -- all variable names are surrounded by two colons (eg, %%var_name%%)
 
 -------------------------- Role Table Queries --------------------------
+-- Viewing the table as a whole
+SELECT * FROM roles;
+
 -- Adding a new role to the table
 INSERT INTO roles VALUES
 (DEFAULT,%%role_name%%);
@@ -18,15 +21,38 @@ WHERE role_id=%%role_id%%;
 
 
 -------------------------- Employee Table Queries --------------------------
+
+-- Viewing the table as a whole
+SELECT * FROM employees;
+
+-- Viewing all employees whom are of a particular role
+SELECT *
+FROM employees
+WHERE role=%%role_id%%;
+
+-- Searching for employees of a particular name
+SELECT *
+FROM employees
+WHERE name=%%name%%;
+
+-- Finding the current salary of an employee %%employee%% as of the date %%date%%
+SELECT name, role, MAX(effective_date) AS "effective_date", pay_amount
+FROM employees AS e, salaries AS s
+WHERE e.employee_id=%%employee%%
+AND e.employee_id = s.employee_id
+AND s.effective_date < %%date%%;
+
 -- Adding a new employee to the DB
 INSERT INTO employees VALUES
-(DEFAULT, 
+(
+DEFAULT, 
 %%hire_date%%, 
 %%full_name%%,
 %%role_id%%,
 1, 
 %%address%%, 
-%%birthdate%%);
+%%birthdate%%
+);
 
 -- We shouldn't be taking employees out of the DB, in case we need to
 -- refer back to them in the future for any reason
@@ -56,6 +82,10 @@ WHERE employee_id=%%employee_id%%;
 
 
 -------------------------- Salaries Table Queries --------------------------
+-- Viewing the entire salary table
+SELECT * 
+FROM salaries;
+
 -- Adding a new salary to the table
 INSERT INTO salaries VALUES
 (DEFAULT,%%effective_date%%, %%ammount%%, %%employee_id%%);
@@ -68,11 +98,36 @@ INSERT INTO salaries VALUES
 -- as this would result in the same inability to track salary history
 -- NO DELETE
 
-SELECT * FROM salaries;
+
 
 
 
 -------------------------- Projects Table Queries --------------------------
+-- Viewing the table as a whole
+SELECT * FROM projects;
+
+-- Viewing active projects
+SELECT * 
+FROM projects
+WHERE is_active=1; 
+
+-- Viewing inactive projects
+SELECT * 
+FROM projects
+WHERE is_active=0; 
+
+-- Viewing all employees whom are working on a project
+-- (and whom are still actively working on said project)
+SELECT name, role 
+FROM employees 
+WHERE is_active=1 
+AND employee_id IN 
+  (
+  SELECT UNIQUE employee_id 
+  FROM employees_projects
+  WHERE project_id=%%project_id%%
+  );
+
 -- Adding a new project to the table
 INSERT INTO projects VALUES
 (DEFAULT, 1, 0, %%deadline%%, %%start_date%%, %%project_name%%);
@@ -107,6 +162,18 @@ WHERE project_id=%%project_id%%;
 
 
 -------------------------- Employees_Projects Table Queries --------------------------
+-- Viewing the entire table
+SELECT * FROM employees_projects;
+
+-- Viewing what the employee X has been working on
+-- from the date range ST to ED
+SELECT name, role, is_active, project_id, date_of_work, number_hours
+FROM employees AS e, employees_projects as ep
+WHERE e.employee_id=%%X%%
+AND date_of_work >= %%ST%%
+AND date_of_work <= %%ED%%
+AND e.employee_id=ep.employee_id;
+
 -- Adding an entry
 INSERT INTO employees_projects VALUES
 (%%employee_id%%, %%project_id%%, %%date_of_work%%, %%number_hours%%);
