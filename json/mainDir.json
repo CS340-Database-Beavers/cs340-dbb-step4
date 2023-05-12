@@ -10,5 +10,13 @@
   {
     "path": "/employees-projects",
     "text": "Manage Employee Projects"
+  },
+  {
+    "path": "/salary",
+    "text": "Manage Employee Salaries"
+  },
+  {
+    "path": "/role",
+    "text": "Manage Employee Roles"
   }
 ]
