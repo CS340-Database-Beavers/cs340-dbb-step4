@@ -9,8 +9,10 @@ var app = express(); // We need to instantiate an express object to interact wit
 PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to change in the future
 // Database
 var db = require("./db-connector");
-var theadData = require("./theadData.json");
-var addEmpInputs = require("./addEmpInputs.json");
+var employeeData = require("./json/employeeData.json");
+var projectData = require("./json/projectData.json");
+var employeesProjectsData = require("./json/employeesProjectsData.json");
+var mainDir = require("./json/mainDir.json");
 //Handlebars
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
@@ -20,9 +22,21 @@ app.use(express.json());
     ROUTES
 */
 app.get("/", function (req, res) {
-  res
-    .status(200)
-    .render("mainPage", { theadData: theadData, addEmpInputs: addEmpInputs });
+  res.status(200).render("mainPage", { mainDirData: mainDir });
+});
+
+app.get("/employee*-project*", function (req, res) {
+  res.status(200).render("employeesProjects", {
+    employeesProjectsData: employeesProjectsData,
+  });
+});
+
+app.get("/*employee*", function (req, res) {
+  res.status(200).render("employee", { employeeData: employeeData });
+});
+
+app.get("/*project*", function (req, res) {
+  res.status(200).render("project", { projectData: projectData });
 });
 
 app.get("*", function (req, res) {
