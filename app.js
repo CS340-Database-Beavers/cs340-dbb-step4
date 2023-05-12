@@ -10,6 +10,7 @@ PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to
 // Database
 var db = require("./db-connector");
 var employeeData = require("./json/employeeData.json");
+var projectData = require("./json/projectData.json");
 var mainDir = require("./json/mainDir.json");
 //Handlebars
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
@@ -23,8 +24,12 @@ app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
 
-app.get("/employee", function (req, res) {
+app.get("/*employee*", function (req, res) {
   res.status(200).render("employee", { employeeData: employeeData });
+});
+
+app.get("/*project*", function (req, res) {
+  res.status(200).render("project", { projectData: projectData });
 });
 
 app.get("*", function (req, res) {
