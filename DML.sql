@@ -174,6 +174,13 @@ AND date_of_work >= %%ST%%
 AND date_of_work <= %%ED%%
 AND e.employee_id=ep.employee_id;
 
+-- Check the total number of hours that have been
+-- put into project X
+SELECT p.project_id, project_name, deadline, percent_completed, SUM(number_hours) as "Total Hours"
+FROM employees_projects as ep, projects as p
+WHERE p.project_id=ep.project_id
+AND p.project_id=%%X%%;
+
 -- Adding an entry
 INSERT INTO employees_projects VALUES
 (%%employee_id%%, %%project_id%%, %%date_of_work%%, %%number_hours%%);
