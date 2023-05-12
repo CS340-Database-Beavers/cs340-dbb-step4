@@ -10,6 +10,8 @@ PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to
 // Database
 var db = require("./db-connector");
 var employeeData = require("./json/employeeData.json");
+var roleData = require("./json/roleData.json");
+var salaryData = require("./json/salaryData.json");
 var projectData = require("./json/projectData.json");
 var employeesProjectsData = require("./json/employeesProjectsData.json");
 var mainDir = require("./json/mainDir.json");
@@ -62,6 +64,14 @@ app.get("/*employee*", function (req, res) {
 
 app.get("/*project*", function (req, res) {
   res.status(200).render("project", { projectData: projectData });
+});
+
+app.get("/*salary", function (req, res) {
+  res.status(200).render("salary", { salaryData: salaryData });
+});
+
+app.get("/*role*", function (req, res) {
+  res.status(200).render("role", { roleData: roleData });
 });
 
 app.get("*", function (req, res) {
