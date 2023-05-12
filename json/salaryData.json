@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "ID": 1,
+        "Effectivedate": "1111-1-1",
+        "Pay": 1234.56,
+        "EmployeeID": 1
+    }
+]
