@@ -23,6 +23,12 @@ employeeSubmit = document.getElementById("employeeSubmit");
 
 employeeSubmit.addEventListener("click", () => addEmployeeData());
 
+removeEmployee = document.getElementsByClassName("removeicon");
+
+removeEmployee.addEventListener("click", function() {
+  
+})
+
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.
 //  * @param  {HTMLFormControlsCollection} elements  the form elements

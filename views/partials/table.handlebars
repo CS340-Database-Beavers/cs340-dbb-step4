@@ -4,6 +4,7 @@
       {{#each tableData.[0]}}
         <th>{{@key}}</th>
       {{/each}}
+        <th>Remove</th>
     </tr>
   </thead>
   <tbody>
@@ -13,6 +14,7 @@
         {{#each this}}
           <td>{{this}}</td>
         {{/each}}
+          <td align="center" style="padding: 0px" id=td{{@index}}><img src="/public/removeicon.png" alt="Delete Row" class="removeicon"></td>
       </tr>
     {{/each}}
   </tbody>

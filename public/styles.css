@@ -1,84 +1,98 @@
 /* Set the font family and color for the entire page */
 body {
-    font-family: Arial, sans-serif;
-    color: #333;
-  }
-  
-  /* Add a header to the page */
-  header {
-    background-color: #f2f2f2;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  /* Style the main container for the page */
-  .container {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  /* Style the table that displays the employee data */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  /* Style the table headers */
-  th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  /* Style the table cells */
-  td {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  /* Style the form used to add or edit employees */
-  form {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  /* Style the form labels and input fields */
-  label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
-  input[type=text], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  /* Style the form submit button */
-  input[type=submit] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  input[type=submit]:hover {
-    background-color: #45a049;
-  }
-  
-  /* Style the error messages displayed on the form */
-  .error {
-    color: red;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* Add a header to the page */
+header {
+  background-color: #f2f2f2;
+  padding: 10px;
+  text-align: center;
+}
+
+h1 a {
+  color: black;
+  text-decoration: none;
+}
+
+/* Style the main container for the page */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Style the table that displays the employee data */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+/* Style the table headers */
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Style the table cells */
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.removeicon {
+  padding: 0px;
+  max-height: 35px;
+}
+
+.removeicon:hover {
+  color: red;
+  cursor: pointer;
+}
+
+/* Style the form used to add or edit employees */
+form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Style the form labels and input fields */
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type=text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Style the form submit button */
+input[type=submit] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+/* Style the error messages displayed on the form */
+.error {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
