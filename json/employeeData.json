@@ -13,6 +13,7 @@
     "Hiredate": "01",
     "Name": "test",
     "Role": "3",
+    "Active": "NULL",
     "Address": "lol",
     "Birthdate": "4-20"
   }
