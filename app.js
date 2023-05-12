@@ -18,11 +18,36 @@ app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 app.use(express.json());
+app.use("/public", express.static("./public/"));
 /*
     ROUTES
 */
 app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
+});
+
+app.post("/addEmployeeData", function (req, res, next) {
+  employeeData.push({
+    ID: req.body.ID,
+    Hiredate: req.body.Hiredate,
+    Name: req.body.Name,
+    Role: req.body.Role,
+    Active: req.body.Activate,
+    Address: req.body.Address,
+    Birthdate: req.body.Birthdate,
+  });
+
+  fs.writeFile(
+    "./employeeData.json",
+    JSON.stringify(leaderBoardData, null, 2),
+    function (err) {
+      if (err) {
+        res.status(500).send("Failed to store employee.");
+      } else {
+        res.status(200).send("Employee successfully stored.");
+      }
+    }
+  );
 });
 
 app.get("/employee*-project*", function (req, res) {
