@@ -1,4 +1,4 @@
-<table>
+<table id="datatable">
   <thead>
     <tr>
       {{#each tableData.[0]}}
@@ -14,7 +14,7 @@
         {{#each this}}
           <td>{{this}}</td>
         {{/each}}
-          <td align="center" style="padding: 0px" class="removeicon" id=td{{@index}}>&#128465</td>
+          <td align="center" style="padding: 0px" class="removeicon" id={{@index}}>&#128465</td>
       </tr>
     {{/each}}
   </tbody>

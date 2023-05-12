@@ -23,11 +23,23 @@ employeeSubmit = document.getElementById("employeeSubmit");
 
 employeeSubmit.addEventListener("click", () => addEmployeeData());
 
-removeEmployee = document.getElementsByClassName("removeicon");
+removeEmployee = document.getElementById("datatable");
 
-removeEmployee.addEventListener("click", function() {
-  
-})
+removeEmployee.addEventListener("click", function (event) {
+  console.log(event.target.id);
+  if (event.target.classList.contains("removeicon")) {
+    fetch("/removeEmployeeData", {
+      method: "POST",
+      body: JSON.stringify({
+        index: event.target.id,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+  location.reload();
+});
 
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.
