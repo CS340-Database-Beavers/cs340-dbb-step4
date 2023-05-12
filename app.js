@@ -32,7 +32,7 @@ app.post("/addEmployeeData", function (req, res, next) {
     Hiredate: req.body.Hiredate,
     Name: req.body.Name,
     Role: req.body.Role,
-    Active: req.body.Activate,
+    Active: req.body.Active,
     Address: req.body.Address,
     Birthdate: req.body.Birthdate,
   });
