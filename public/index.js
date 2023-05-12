@@ -31,15 +31,63 @@ removeEmployee.addEventListener("click", function (event) {
     fetch("/removeEmployeeData", {
       method: "POST",
       body: JSON.stringify({
-        index: event.target.id,
+        index: event.target.parentNode.id,
       }),
       headers: {
         "Content-Type": "application/json",
       },
     });
+    location.reload();
   }
-  location.reload();
 });
+
+const cells = document.querySelectorAll("td");
+
+for (let i = 0; i < cells.length; i++) {
+  const cell = cells[i];
+  if (cell.classList.contains("ID") || cell.classList.contains("removeicon")) {
+    continue;
+  }
+
+  cell.addEventListener("mouseover", () => {
+    cell.classList.add("editing");
+  });
+
+  cell.addEventListener("mouseout", () => {
+    cell.classList.remove("editing");
+  });
+
+  cell.addEventListener("dblclick", () => {
+    cell.contentEditable = "true";
+    cell.focus();
+  });
+
+  cell.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      editEmployeeData();
+    }
+  });
+
+  cell.addEventListener("blur", () => editEmployeeData());
+
+  function editEmployeeData() {
+    cell.contentEditable = "false";
+    cell.classList.remove("editing");
+    fetch("/editEmployeeData", {
+      method: "POST",
+      body: JSON.stringify({
+        index: cell.parentNode.id,
+        key: cell.className,
+        newString: cell.textContent,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    location.reload();
+  }
+}
 
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.

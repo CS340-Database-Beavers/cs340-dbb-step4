@@ -10,11 +10,11 @@
   <tbody>
 
     {{#each tableData}}
-      <tr>
+      <tr id={{@index}}>
         {{#each this}}
-          <td>{{this}}</td>
+          <td class={{@key}}>{{this}}</td>
         {{/each}}
-          <td align="center" style="padding: 0px" class="removeicon" id={{@index}}>&#128465</td>
+          <td align="center" style="padding: 0px" class="removeicon">&#128465</td>
       </tr>
     {{/each}}
   </tbody>

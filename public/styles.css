@@ -72,6 +72,12 @@ td {
   cursor: pointer;
 }
 
+.editing {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+  border-radius: 5px;
+}
+
 /* Style the form used to add or edit employees */
 form {
   max-width: 600px;

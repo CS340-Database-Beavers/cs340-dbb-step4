@@ -53,8 +53,25 @@ app.post("/addEmployeeData", function (req, res, next) {
 });
 
 app.post("/removeEmployeeData", function (req, res, next) {
-  console.log(req.body.index)
-  employeeData.splice(parseInt(req.body.index),1);
+  // console.log(req.body.index)
+  employeeData.splice(parseInt(req.body.index), 1);
+
+  fs.writeFile(
+    "./json/employeeData.json",
+    JSON.stringify(employeeData, null, 2),
+    function (err) {
+      if (err) {
+        res.status(500).send("Failed to delete employee.");
+      } else {
+        res.status(200).send("Employee successfully deleted.");
+      }
+    }
+  );
+});
+
+app.post("/editEmployeeData", function (req, res, next) {
+  console.log(req.body.index);
+  employeeData[req.body.index][req.body.key] = req.body.newString;
 
   fs.writeFile(
     "./json/employeeData.json",
