@@ -23,7 +23,7 @@ employeeSubmit = document.getElementById("employeeSubmit");
 
 employeeSubmit.addEventListener("click", () => addEmployeeData());
 
-// /**
+/**
 //  * Retrieves input data from a form and returns it as a JSON object.
 //  * @param  {HTMLFormControlsCollection} elements  the form elements
 //  * @return {Object}                               form data as an object literal
@@ -51,7 +51,7 @@ employeeSubmit.addEventListener("click", () => addEmployeeData());
 //   const data = formToJSON(form.elements);
 
 //   // ...this is where we’d actually do something with the form data...
-//   console.log("Submit clicked");
+//   console.log(data)
 //   fetch("/addEmployeeData", {
 //     method: "POST",
 //     body: data,

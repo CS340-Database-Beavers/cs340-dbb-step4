@@ -38,8 +38,8 @@ app.post("/addEmployeeData", function (req, res, next) {
   });
 
   fs.writeFile(
-    "./employeeData.json",
-    JSON.stringify(leaderBoardData, null, 2),
+    "./json/employeeData.json",
+    JSON.stringify(employeeData, null, 2),
     function (err) {
       if (err) {
         res.status(500).send("Failed to store employee.");
