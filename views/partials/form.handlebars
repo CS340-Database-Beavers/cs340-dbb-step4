@@ -1,0 +1,8 @@
+<form>
+  <h2>{{title}}</h2>
+  {{#each inputData}}
+    <label for={{@key}}>{{@key}}:</label>
+    <input type="text" id={{@key}} name={{@key}} />
+  {{/each}}
+  <input type="submit" value="Submit" />
+</form>

@@ -9,8 +9,7 @@ var app = express(); // We need to instantiate an express object to interact wit
 PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to change in the future
 // Database
 var db = require("./db-connector");
-var theadData = require("./json/theadData.json");
-var addEmpInputs = require("./json/addEmpInputs.json");
+var employeeData = require("./json/employeeData.json");
 var mainDir = require("./json/mainDir.json");
 //Handlebars
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
@@ -25,9 +24,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/employee", function (req, res) {
-  res
-    .status(200)
-    .render("employee", { theadData: theadData, addEmpInputs: addEmpInputs });
+  res.status(200).render("employee", { employeeData: employeeData });
 });
 
 app.get("*", function (req, res) {

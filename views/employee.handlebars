@@ -1,26 +1,6 @@
 <div class="container">
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Position</th>
-        <th>Department</th>
-        <th>Email</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each theadData}}
-        {{>thead ID=ID Name=Name Position=Position Department=Department Email=Email}}
-      {{/each}}
-    </tbody>
-  </table>
-
-  <form>
-    <h2>Add Employee</h2>
-    {{#each addEmpInputs}}
-      {{>addEmpInputs id=id label=label}}
-    {{/each}}
-    <input type="submit" value="Submit" />
-  </form>
+  {{!-- Create Table for each employee data --}}
+  {{> table tableData=employeeData}}
+  {{!-- Using the labels from employee data make add form --}}
+  {{> form inputData=employeeData.[0] title="Add Employee"}}
 </div>
