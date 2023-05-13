@@ -50,7 +50,7 @@ app.post("/addData", function (req, res, next) {
   );
 });
 
-app.post("/removeEmployeeData", function (req, res, next) {
+app.post("/removeData", function (req, res, next) {
   data[req.body.page].splice(parseInt(req.body.index), 1);
   var addDataPath = "./json/" + req.body.page + "Data.json"
   fs.writeFile(
@@ -67,12 +67,11 @@ app.post("/removeEmployeeData", function (req, res, next) {
 });
 
 app.post("/editEmployeeData", function (req, res, next) {
-  console.log(req.body.index);
-  employeeData[req.body.index][req.body.key] = req.body.newString;
-
+  data[req.body.page][req.body.index][req.body.key] = req.body.newString;
+  var addDataPath = "./json/" + req.body.page + "Data.json"
   fs.writeFile(
-    "./json/employeeData.json",
-    JSON.stringify(employeeData, null, 2),
+    addDataPath,
+    JSON.stringify(data[req.body.page], null, 2),
     function (err) {
       if (err) {
         res.status(500).send("Failed to delete employee.");

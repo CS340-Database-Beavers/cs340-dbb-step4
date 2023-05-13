@@ -1,10 +1,10 @@
 // var employeeData = require("../json/employeeData.json")
 
 function addData() {
-  const forminputs = document.getElementsByClassName("datainput")
-  var newObject = {}
-  for(let i = 0; i < forminputs.length; i++){
-    newObject[forminputs[i].id] = forminputs[i].value
+  const forminputs = document.getElementsByClassName("datainput");
+  var newObject = {};
+  for (let i = 0; i < forminputs.length; i++) {
+    newObject[forminputs[i].id] = forminputs[i].value;
   }
   fetch("/addData", {
     method: "POST",
@@ -27,19 +27,19 @@ removeEmployee = document.getElementById("datatable");
 removeEmployee.addEventListener("click", function (event) {
   if (event.target.classList.contains("removeicon")) {
     if (removeEmployee.rows.length <= 2) {
-      alert("You must have at least one Employee in the table");
+      alert("You must have at least one row in the table");
     } else {
-      fetch("/removeEmployeeData", {
+      fetch("/removeData", {
         method: "POST",
         body: JSON.stringify({
           index: event.target.parentNode.id,
-          page: event.target.parentNode.parentNode.parentNode.className
+          page: event.target.parentNode.parentNode.parentNode.className,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      removeEmployee.deleteRow(parseInt(event.target.parentNode.id)+1);
+      removeEmployee.deleteRow(parseInt(event.target.parentNode.id) + 1);
     }
   }
 });
@@ -83,6 +83,7 @@ for (let i = 0; i < cells.length; i++) {
         index: cell.parentNode.id,
         key: cell.className,
         newString: cell.textContent,
+        page: event.target.parentNode.parentNode.parentNode.className,
       }),
       headers: {
         "Content-Type": "application/json",
