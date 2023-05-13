@@ -26,18 +26,21 @@ employeeSubmit.addEventListener("click", () => addEmployeeData());
 removeEmployee = document.getElementById("datatable");
 
 removeEmployee.addEventListener("click", function (event) {
-  console.log(event.target.id);
   if (event.target.classList.contains("removeicon")) {
-    fetch("/removeEmployeeData", {
-      method: "POST",
-      body: JSON.stringify({
-        index: event.target.parentNode.id,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    location.reload();
+    if (removeEmployee.rows.length <= 2) {
+      alert("You must have at least one Employee in the table");
+    } else {
+      fetch("/removeEmployeeData", {
+        method: "POST",
+        body: JSON.stringify({
+          index: event.target.parentNode.id,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      removeEmployee.deleteRow(parseInt(event.target.parentNode.id)+1);
+    }
   }
 });
 
@@ -85,7 +88,7 @@ for (let i = 0; i < cells.length; i++) {
         "Content-Type": "application/json",
       },
     });
-    location.reload();
+    // location.reload();
   }
 }
 
