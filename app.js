@@ -66,7 +66,7 @@ app.post("/removeData", function (req, res, next) {
   );
 });
 
-app.post("/editEmployeeData", function (req, res, next) {
+app.post("/editData", function (req, res, next) {
   data[req.body.page][req.body.index][req.body.key] = req.body.newString;
   var addDataPath = "./json/" + req.body.page + "Data.json"
   fs.writeFile(
@@ -74,9 +74,9 @@ app.post("/editEmployeeData", function (req, res, next) {
     JSON.stringify(data[req.body.page], null, 2),
     function (err) {
       if (err) {
-        res.status(500).send("Failed to delete employee.");
+        res.status(500).send("Failed to update data.");
       } else {
-        res.status(200).send("Employee successfully deleted.");
+        res.status(200).send("Data updated successfully deleted.");
       }
     }
   );

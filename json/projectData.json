@@ -2,7 +2,7 @@
   {
     "ID": 1,
     "Ongoing": true,
-    "Percent_Complete": 0,
+    "Percent_Complete": "1",
     "Deadline": "1111-1-1",
     "Startdate": "1111-1-1",
     "Name": "none"

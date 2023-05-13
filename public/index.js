@@ -68,22 +68,22 @@ for (let i = 0; i < cells.length; i++) {
   cell.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      editEmployeeData();
+      editData();
     }
   });
 
-  cell.addEventListener("blur", () => editEmployeeData());
+  cell.addEventListener("blur", () => editData());
 
-  function editEmployeeData() {
+  function editData() {
     cell.contentEditable = "false";
     cell.classList.remove("editing");
-    fetch("/editEmployeeData", {
+    fetch("/editData", {
       method: "POST",
       body: JSON.stringify({
         index: cell.parentNode.id,
         key: cell.className,
         newString: cell.textContent,
-        page: event.target.parentNode.parentNode.parentNode.className,
+        page: cell.parentNode.parentNode.parentNode.className,
       }),
       headers: {
         "Content-Type": "application/json",
