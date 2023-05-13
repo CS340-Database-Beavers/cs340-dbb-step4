@@ -1,18 +1,15 @@
 // var employeeData = require("../json/employeeData.json")
 
-function addEmployeeData() {
-  console.log("Submit clicked");
+function addData() {
+  const forminputs = document.getElementsByClassName("datainput")
+  var newObject = {}
+  for(let i = 0; i < forminputs.length; i++){
+    newObject[forminputs[i].id] = forminputs[i].value
+  }
   fetch("/addEmployeeData", {
     method: "POST",
-    body: JSON.stringify({
-      ID: document.getElementById("ID").value,
-      Hiredate: document.getElementById("Hiredate").value,
-      Name: document.getElementById("Name").value,
-      Role: document.getElementById("Role").value,
-      Active: document.getElementById("Active").value,
-      Address: document.getElementById("Address").value,
-      Birthdate: document.getElementById("Birthdate").value,
-    }),
+    body: JSON.stringify(newObject),
+    page: document.getElementById("dataform").className,
     headers: {
       "Content-Type": "application/json",
     },
@@ -21,7 +18,7 @@ function addEmployeeData() {
 
 employeeSubmit = document.getElementById("employeeSubmit");
 
-employeeSubmit.addEventListener("click", () => addEmployeeData());
+employeeSubmit.addEventListener("click", () => addData());
 
 removeEmployee = document.getElementById("datatable");
 

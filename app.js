@@ -14,6 +14,12 @@ var roleData = require("./json/roleData.json");
 var salaryData = require("./json/salaryData.json");
 var projectData = require("./json/projectData.json");
 var employeesProjectsData = require("./json/employeesProjectsData.json");
+const data = {
+  "employee": employeeData,
+  "project": projectData,
+  "role": roleData,
+  "salary": salaryData
+};
 var mainDir = require("./json/mainDir.json");
 //Handlebars
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
@@ -29,19 +35,12 @@ app.get("/", function (req, res) {
 });
 
 app.post("/addEmployeeData", function (req, res, next) {
-  employeeData.push({
-    ID: req.body.ID,
-    Hiredate: req.body.Hiredate,
-    Name: req.body.Name,
-    Role: req.body.Role,
-    Active: req.body.Active,
-    Address: req.body.Address,
-    Birthdate: req.body.Birthdate,
-  });
-
+  console.log(req.page)
+  data[req.page].push(req.body);
+  var addDataPath = "./json/" + req.page + "Data.json"
   fs.writeFile(
-    "./json/employeeData.json",
-    JSON.stringify(employeeData, null, 2),
+    addDataPath,
+    JSON.stringify(data[req.page], null, 2),
     function (err) {
       if (err) {
         res.status(500).send("Failed to store employee.");

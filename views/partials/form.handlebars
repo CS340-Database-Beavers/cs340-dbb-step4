@@ -1,8 +1,8 @@
-<form class={{page}}Form>
+<form class={{page}} id="dataform">
   <h2>{{title}}</h2>
   {{#each inputData}}
     <label for={{@key}}>{{@key}}:</label>
-    <input type="text" id={{@key}} name={{@key}} />
+    <input type="text" id={{@key}} name={{@key}} class="datainput" />
   {{/each}}
   <input id={{page}}Submit type="submit" value="Submit" />
 </form>
