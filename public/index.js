@@ -94,9 +94,9 @@ for (let i = 0; i < cells.length; i++) {
 
 const table = document.getElementById("datatable");
 const tbody = table.querySelector("tbody");
-const rows = Array.from(tbody.querySelectorAll("tr"));
 
 const sortTable = (columnIndex, ascending = true) => {
+  const rows = Array.from(tbody.querySelectorAll("tr"));
   const sortFn = (a, b) => {
     const cellA = a.cells[columnIndex].textContent;
     const cellB = b.cells[columnIndex].textContent;
