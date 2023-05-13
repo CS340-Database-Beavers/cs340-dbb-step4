@@ -72,6 +72,19 @@ td {
   cursor: pointer;
 }
 
+th.sorted-asc::after {
+  content: " ▲";
+}
+th.sorted-desc::after {
+  content: " ▼";
+}
+
+/* Highlight the table header cells when hovering over them */
+th:hover {
+  background-color: #ddd;
+  cursor: pointer;
+}
+
 .editing {
   outline: 2px solid #007bff;
   outline-offset: -2px;
@@ -90,7 +103,8 @@ label {
   margin-bottom: 10px;
 }
 
-input[type=text], select {
+input[type="text"],
+select {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -101,8 +115,8 @@ input[type=text], select {
 }
 
 /* Style the form submit button */
-input[type=submit] {
-  background-color: #4CAF50;
+input[type="submit"] {
+  background-color: #4caf50;
   color: white;
   padding: 12px 20px;
   border: none;
@@ -110,7 +124,7 @@ input[type=submit] {
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type="submit"]:hover {
   background-color: #45a049;
 }
 

@@ -89,6 +89,41 @@ for (let i = 0; i < cells.length; i++) {
   }
 }
 
+const table = document.getElementById("datatable");
+const tbody = table.querySelector("tbody");
+const rows = Array.from(tbody.querySelectorAll("tr"));
+
+const sortTable = (columnIndex, ascending = true) => {
+  const sortFn = (a, b) => {
+    const cellA = a.cells[columnIndex].textContent;
+    const cellB = b.cells[columnIndex].textContent;
+    if (cellA < cellB) return ascending ? -1 : 1;
+    if (cellA > cellB) return ascending ? 1 : -1;
+    return 0;
+  };
+  rows.sort(sortFn);
+  rows.forEach((row) => tbody.removeChild(row));
+  rows.forEach((row) => tbody.appendChild(row));
+};
+
+const headerCells = table.querySelectorAll("th");
+headerCells.forEach((cell, index) => {
+  cell.addEventListener("click", () => {
+    const ascending = !cell.classList.contains("sorted-asc");
+    const descending = !cell.classList.contains("sorted-desc");
+    var sortIndex = index;
+    headerCells.forEach((header) =>
+      header.classList.remove("sorted-asc", "sorted-desc")
+    );
+    if (ascending && !descending) {
+      sortIndex = 0;
+    }
+    cell.classList.toggle("sorted-asc", ascending && descending);
+    cell.classList.toggle("sorted-desc", !ascending);
+    sortTable(sortIndex, ascending);
+  });
+});
+
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.
 //  * @param  {HTMLFormControlsCollection} elements  the form elements
