@@ -6,19 +6,21 @@ function addData() {
   for(let i = 0; i < forminputs.length; i++){
     newObject[forminputs[i].id] = forminputs[i].value
   }
-  fetch("/addEmployeeData", {
+  fetch("/addData", {
     method: "POST",
-    body: JSON.stringify(newObject),
-    page: document.getElementById("dataform").className,
+    body: JSON.stringify({
+      page: document.getElementById("dataform").className,
+      newData: newObject,
+    }),
     headers: {
       "Content-Type": "application/json",
     },
   });
 }
 
-employeeSubmit = document.getElementById("employeeSubmit");
+submit = document.getElementById("submit");
 
-employeeSubmit.addEventListener("click", () => addData());
+submit.addEventListener("click", () => addData());
 
 removeEmployee = document.getElementById("datatable");
 
@@ -31,6 +33,7 @@ removeEmployee.addEventListener("click", function (event) {
         method: "POST",
         body: JSON.stringify({
           index: event.target.parentNode.id,
+          page: event.target.parentNode.parentNode.parentNode.className
         }),
         headers: {
           "Content-Type": "application/json",

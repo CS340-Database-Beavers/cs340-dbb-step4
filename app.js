@@ -34,35 +34,33 @@ app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
 
-app.post("/addEmployeeData", function (req, res, next) {
-  console.log(req.page)
-  data[req.page].push(req.body);
-  var addDataPath = "./json/" + req.page + "Data.json"
+app.post("/addData", function (req, res, next) {
+  data[req.body.page].push(req.body.newData);
+  var addDataPath = "./json/" + req.body.page + "Data.json"
   fs.writeFile(
     addDataPath,
-    JSON.stringify(data[req.page], null, 2),
+    JSON.stringify(data[req.body.page], null, 2),
     function (err) {
       if (err) {
-        res.status(500).send("Failed to store employee.");
+        res.status(500).send("Failed to store new data.");
       } else {
-        res.status(200).send("Employee successfully stored.");
+        res.status(200).send("New data successfully stored.");
       }
     }
   );
 });
 
 app.post("/removeEmployeeData", function (req, res, next) {
-  // console.log(req.body.index)
-  employeeData.splice(parseInt(req.body.index), 1);
-
+  data[req.body.page].splice(parseInt(req.body.index), 1);
+  var addDataPath = "./json/" + req.body.page + "Data.json"
   fs.writeFile(
-    "./json/employeeData.json",
-    JSON.stringify(employeeData, null, 2),
+    addDataPath,
+    JSON.stringify(data[req.body.page], null, 2),
     function (err) {
       if (err) {
-        res.status(500).send("Failed to delete employee.");
+        res.status(500).send("Failed to delete data point.");
       } else {
-        res.status(200).send("Employee successfully deleted.");
+        res.status(200).send("Data successfully deleted.");
       }
     }
   );
