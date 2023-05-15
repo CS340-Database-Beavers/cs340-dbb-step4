@@ -7,5 +7,23 @@
     "Active": "true",
     "Address": "420 Godknowswhere St",
     "Birthdate": "1970-5-10"
+  },
+  {
+    "ID": "2",
+    "Hiredate": "2021-10-11",
+    "Name": "Givertz Hellspawn",
+    "Role": "Arch_Demon",
+    "Active": "0",
+    "Address": "666 Satan St",
+    "Birthdate": "1966-6-6"
+  },
+  {
+    "ID": "3",
+    "Hiredate": "2021-6-6",
+    "Name": "Chase",
+    "Role": "juggler",
+    "Active": "true",
+    "Address": "4205 Tim Lane",
+    "Birthdate": "2088-1-1"
   }
 ]
