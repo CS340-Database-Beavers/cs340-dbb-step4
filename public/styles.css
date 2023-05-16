@@ -85,15 +85,37 @@ th:hover {
   cursor: pointer;
 }
 
-.editing {
+/* .editing {
   outline: 2px solid #007bff;
   outline-offset: -2px;
   border-radius: 5px;
+  padding: 1px;
+}
+
+.editing::after {
+  color: #007bff;
+  font-weight: 800;
+  content: " 🖉";
+} */
+
+.editing {
+  position: relative;
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+  border-radius: 5px;
+  padding-right: 20px; /* Adjust the padding as needed */
 }
 
 .editing::after {
   content: " 🖉";
+  position: absolute;
+  top: 50%;
+  right: 5px; /* Adjust the right position as needed */
+  transform: translateY(-50%);
+  color: #007bff;
+  font-weight: 800;
 }
+
 
 /* Style the form used to add or edit employees */
 form {
