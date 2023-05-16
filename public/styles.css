@@ -91,6 +91,10 @@ th:hover {
   border-radius: 5px;
 }
 
+.editing::after {
+  content: " 🖉";
+}
+
 /* Style the form used to add or edit employees */
 form {
   max-width: 600px;
