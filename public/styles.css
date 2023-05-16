@@ -22,6 +22,28 @@ header {
   text-align: center;
 }
 
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar li {
+  display: inline-block;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+}
+
+.navbar a:hover {
+  color: #000;
+}
+
 h1 a {
   /* color: white; */
   color: black;
