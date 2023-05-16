@@ -128,6 +128,9 @@ headerCells.forEach((cell, index) => {
   });
 });
 
+
+
+
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.
 //  * @param  {HTMLFormControlsCollection} elements  the form elements
@@ -168,3 +171,86 @@ headerCells.forEach((cell, index) => {
 
 // const form = document.getElementsByTagName("form")[0];
 // form.addEventListener("submit", handleFormSubmit);
+
+
+
+// // Get table elements
+// const dataInfo = document.getElementById('dataInfo');
+// const pagination = document.getElementById('pagination');
+
+// // Function to render the table
+// function renderTable(pageSize, currentPage) {
+//   table.innerHTML = ''; // Clear existing table
+
+//   // Calculate the start and end index of the current page
+//   const startIndex = (currentPage - 1) * pageSize;
+//   const endIndex = startIndex + pageSize;
+
+//   // Iterate over the data and create table rows
+//   for (let i = startIndex; i < endIndex && i < data.length; i++) {
+//     const row = document.createElement('tr');
+
+//     // Add table cells
+//     const idCell = document.createElement('td');
+//     idCell.textContent = data[i].id;
+//     row.appendChild(idCell);
+
+//     const nameCell = document.createElement('td');
+//     nameCell.textContent = data[i].name;
+//     row.appendChild(nameCell);
+
+//     const ageCell = document.createElement('td');
+//     ageCell.textContent = data[i].age;
+//     row.appendChild(ageCell);
+
+//     // Add the row to the table
+//     table.appendChild(row);
+//   }
+
+//   // Update data info
+//   const startInfo = startIndex + 1;
+//   const endInfo = Math.min(endIndex, data.length);
+//   dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
+// }
+
+// // Function to handle entries per page change
+// function handleEntriesPerPageChange() {
+//   const pageSize = parseInt(this.value);
+//   const currentPage = 1;
+//   renderTable(pageSize, currentPage);
+//   renderPagination(pageSize, currentPage);
+// }
+
+// // Function to handle pagination navigation
+// function handlePaginationNavigation() {
+//   const pageSize = parseInt(document.getElementById('entriesDropdown').value);
+//   const currentPage = parseInt(this.textContent);
+//   renderTable(pageSize, currentPage);
+//   renderPagination(pageSize, currentPage);
+// }
+
+// // Function to render pagination
+// function renderPagination(pageSize, currentPage) {
+//   pagination.innerHTML = ''; // Clear existing pagination
+
+//   // Calculate the total number of pages
+//   const totalPages = Math.ceil(data.length / pageSize);
+
+//   // Create pagination buttons
+//   for (let i = 1; i <= totalPages; i++) {
+//     const button = document.createElement('button');
+//     button.textContent = i;
+//     button.addEventListener('click', handlePaginationNavigation);
+//     pagination.appendChild(button);
+//   }
+// }
+
+// Add event listeners
+// document.getElementById('entriesDropdown').addEventListener('change', handleEntriesPerPageChange);
+// document.getElementById('filterToggleBtn').addEventListener('click', toggleFilterRow);
+
+// // Initial render
+// const initialPageSize = 10;
+// const initialCurrentPage = 1;
+// renderTable(initialPageSize, initialCurrentPage);
+// renderPagination(initialPageSize, initialCurrentPage);
