@@ -173,6 +173,8 @@ headerCells.forEach((cell, index) => {
 // form.addEventListener("submit", handleFormSubmit);
 
 
+// Sample data for the table
+
 
 // // Get table elements
 // const dataInfo = document.getElementById('dataInfo');
@@ -180,6 +182,15 @@ headerCells.forEach((cell, index) => {
 
 // // Function to render the table
 // function renderTable(pageSize, currentPage) {
+//   const data = fetch("/readData", {
+//     method: "POST",
+//     body: JSON.stringify({
+//       name: removeEmployee.className,
+//     }),
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
 //   table.innerHTML = ''; // Clear existing table
 
 //   // Calculate the start and end index of the current page

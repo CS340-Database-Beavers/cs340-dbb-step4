@@ -34,6 +34,15 @@ app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
 
+app.post("/readData", function (req, res, next) {
+  data[req.body].push(req.body.newData);
+  try{
+    res.status(200).send(data[req.body.name]);
+  } catch(err) {
+    res.status(500).send("Failed to read data: " + err);
+  }
+});
+
 app.post("/addData", function (req, res, next) {
   data[req.body.page].push(req.body.newData);
   var addDataPath = "./json/" + req.body.page + "Data.json";
