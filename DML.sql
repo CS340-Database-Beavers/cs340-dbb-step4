@@ -1,4 +1,4 @@
--- all variable names are surrounded by two colons (eg, %%var_name%%)
+-- all variable names are surrounded by two percents (eg, %%var_name%%)
 
 -------------------------- Role Table Queries --------------------------
 -- Viewing the table as a whole
@@ -16,8 +16,24 @@ WHERE role_id=%%role_id%%;
 -- even if nobody uses the role now, that may not be the case in the future...
 -- NO DELETE
 
--- SELECT * FROM roles;
-
+-- Retrieve the number of working employees for each role
+-- Useful for seeing the skill areas a company may need to fill/cut
+-- Retrieve the number of working employees for each role
+-- Useful for seeing the skill areas a company may need to fill/cut
+SELECT r.role_id as "role_id", r.role_name, SUM(1) as "number of workers"
+FROM employees as e, roles as r
+WHERE e.role = r.role_id
+AND e.is_active = 1
+GROUP BY e.role
+UNION
+SELECT r.role_id as "role_id", r.role_name, 0 as "number of workers"
+FROM roles as r
+WHERE r.role_id NOT IN 
+(
+    SELECT role
+    FROM employees
+    WHERE is_active=1
+);
 
 
 -------------------------- Employee Table Queries --------------------------
