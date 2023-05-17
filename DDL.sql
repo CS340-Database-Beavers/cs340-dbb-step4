@@ -124,7 +124,12 @@ INSERT INTO employees VALUES
 (DEFAULT, '2020-12-31', "Benny Beaverton", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'1990-10-6'),
 (DEFAULT, '2020-12-31', "Blaid Beaverton", (SELECT role_id FROM roles WHERE role_name="Senior Mechanical Engineer"),1,"5551 NW Harrison Blvd",'1992-11-4'),
 (DEFAULT, '2021-3-1', "Oregon Duck", (SELECT role_id FROM roles WHERE role_name="Electric Engineer"),0,"2555 SE Portland Ave",'1990-10-6'),
-(DEFAULT, '2021-12-31', "Roger Smith", (SELECT role_id FROM roles WHERE role_name="Senior Software Engineer"),1,"8750 Rocky Way",'1995-5-5');
+(DEFAULT, '2023-1-31', "Roger Smith", (SELECT role_id FROM roles WHERE role_name="Senior Software Engineer"),1,"8750 Rocky Way",'1995-5-5'),
+(DEFAULT, '2023-1-31', "Tweedle Dee", (SELECT role_id FROM roles WHERE role_name="Software Engineer"),1,"1458 Wonderland Way",'1895-5-5'),
+(DEFAULT, '2023-1-31', "Tweedle Dum", (SELECT role_id FROM roles WHERE role_name="Software Engineer"),1,"1458 Wonderland Way",'1895-5-5'),
+(DEFAULT, '2023-1-31', "Knives Chau", (SELECT role_id FROM roles WHERE role_name="Software Engineer"),1,"555 Westward Way",'2000-10-10'),
+(DEFAULT, '2023-1-31', "Scott Pilgrim", (SELECT role_id FROM roles WHERE role_name="Electric Engineer"),1,"8705 Scotty Blvd",'1999-10-12'),
+(DEFAULT, '2023-1-31', "Luke Skywalker", (SELECT role_id FROM roles WHERE role_name="Electric Engineer"),1,"0000 Milky Way",'2000-12-12');
 
 INSERT INTO salaries VALUES
 (DEFAULT, '2020-12-31', 18.00, (SELECT employee_id FROM employees WHERE name="Benny Beaverton")),
@@ -137,7 +142,7 @@ INSERT INTO salaries VALUES
 (DEFAULT, '2022-3-1', 18.01, (SELECT employee_id FROM employees WHERE name="Oregon Duck")),
 (DEFAULT, '2022-12-1', 18.02, (SELECT employee_id FROM employees WHERE name="Oregon Duck")),
 (DEFAULT, '2021-12-31', 22.00, (SELECT employee_id FROM employees WHERE name="Roger Smith")),
-(DEFAULT, '2022-12-31', 32.00, (SELECT employee_id FROM employees WHERE name="Roger Smith"));
+(DEFAULT, '2023-12-31', 32.00, (SELECT employee_id FROM employees WHERE name="Roger Smith"));
 
 INSERT INTO projects VALUES
 (DEFAULT, 1, 85, '2024-2-12','2022-11-20', "OSURC Autonomous Mars Rover"),
