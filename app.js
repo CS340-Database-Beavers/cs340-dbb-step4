@@ -10,8 +10,16 @@ PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to
 // Database
 var db = require("./db-connector");
 var employeeData = require("./json/employeeData.json");
+var roleData = require("./json/roleData.json");
+var salaryData = require("./json/salaryData.json");
 var projectData = require("./json/projectData.json");
 var employeesProjectsData = require("./json/employeesProjectsData.json");
+const data = {
+  employee: employeeData,
+  project: projectData,
+  role: roleData,
+  salary: salaryData,
+};
 var mainDir = require("./json/mainDir.json");
 //Handlebars
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
@@ -26,25 +34,58 @@ app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
 
-app.post("/addEmployeeData", function (req, res, next) {
-  employeeData.push({
-    ID: req.body.ID,
-    Hiredate: req.body.Hiredate,
-    Name: req.body.Name,
-    Role: req.body.Role,
-    Active: req.body.Active,
-    Address: req.body.Address,
-    Birthdate: req.body.Birthdate,
-  });
+app.post("/readData", function (req, res, next) {
+  data[req.body].push(req.body.newData);
+  try{
+    res.status(200).send(data[req.body.name]);
+  } catch(err) {
+    res.status(500).send("Failed to read data: " + err);
+  }
+});
 
+app.post("/addData", function (req, res, next) {
+  data[req.body.page].push(req.body.newData);
+  var addDataPath = "./json/" + req.body.page + "Data.json";
   fs.writeFile(
-    "./json/employeeData.json",
-    JSON.stringify(employeeData, null, 2),
+    addDataPath,
+    JSON.stringify(data[req.body.page], null, 2),
     function (err) {
       if (err) {
-        res.status(500).send("Failed to store employee.");
+        res.status(500).send("Failed to store new data.");
       } else {
-        res.status(200).send("Employee successfully stored.");
+        res.status(200).send("New data successfully stored.");
+      }
+    }
+  );
+});
+
+app.post("/removeData", function (req, res, next) {
+  data[req.body.page].splice(parseInt(req.body.index), 1);
+  var addDataPath = "./json/" + req.body.page + "Data.json";
+  fs.writeFile(
+    addDataPath,
+    JSON.stringify(data[req.body.page], null, 2),
+    function (err) {
+      if (err) {
+        res.status(500).send("Failed to delete data point.");
+      } else {
+        res.status(200).send("Data successfully deleted.");
+      }
+    }
+  );
+});
+
+app.post("/editData", function (req, res, next) {
+  data[req.body.page][req.body.index][req.body.key] = req.body.newString;
+  var addDataPath = "./json/" + req.body.page + "Data.json";
+  fs.writeFile(
+    addDataPath,
+    JSON.stringify(data[req.body.page], null, 2),
+    function (err) {
+      if (err) {
+        res.status(500).send("Failed to update data.");
+      } else {
+        res.status(200).send("Data updated successfully deleted.");
       }
     }
   );
@@ -53,19 +94,34 @@ app.post("/addEmployeeData", function (req, res, next) {
 app.get("/employee*-project*", function (req, res) {
   res.status(200).render("employeesProjects", {
     employeesProjectsData: employeesProjectsData,
+    mainDirData: mainDir,
   });
 });
 
 app.get("/*employee*", function (req, res) {
-  res.status(200).render("employee", { employeeData: employeeData });
+  res
+    .status(200)
+    .render("employee", { employeeData: employeeData, mainDirData: mainDir });
 });
 
 app.get("/*project*", function (req, res) {
-  res.status(200).render("project", { projectData: projectData });
+  res
+    .status(200)
+    .render("project", { projectData: projectData, mainDirData: mainDir });
+});
+
+app.get("/*salary", function (req, res) {
+  res
+    .status(200)
+    .render("salary", { salaryData: salaryData, mainDirData: mainDir });
+});
+
+app.get("/*role*", function (req, res) {
+  res.status(200).render("role", { roleData: roleData, mainDirData: mainDir });
 });
 
 app.get("*", function (req, res) {
-  res.status(404).render("404");
+  res.status(404).render("404", { mainDirData: mainDir });
 });
 
 app.listen(PORT, function (err) {

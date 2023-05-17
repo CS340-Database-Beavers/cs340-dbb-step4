@@ -13,6 +13,13 @@
   <body>
     <header>
       <h1><a href="/">Employee Database</a></h1>
+      <nav class="navbar">
+        <ul>
+          {{#each mainDirData}}
+            <li><a href={{path}}>{{text}}</a></li>
+          {{/each}}
+        </ul>
+      </nav>
     </header>
     {{{body}}}
   </body>
