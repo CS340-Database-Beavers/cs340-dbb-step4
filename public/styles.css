@@ -52,7 +52,7 @@ h1 a {
 
 /* Style the main container for the page */
 .container {
-  max-width: 960px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -285,6 +285,7 @@ th {
 td {
   padding: 10px;
   border-bottom: 1px solid #ccc;
+  /* width: 100%; */
   /* border-bottom: 1px solid #5d6669; */
 }
 
@@ -326,6 +327,7 @@ th:hover {
   content: " 🖉";
 } */
 
+
 .editing {
   position: relative;
   outline: 2px solid #007bff;
@@ -357,7 +359,7 @@ label {
   margin-bottom: 10px;
 }
 
-input[type="text"]{
+.datainput{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -365,6 +367,20 @@ input[type="text"]{
   border: 2px solid #ccc;
   /* border: 2px solid #5d6669; */
   border-radius: 4px;
+}
+
+td input{
+  width: 100%;
+}
+
+thead td {
+  /* width: min-content; */
+  height: auto;
+  /* padding: 20px; */
+  /* margin: auto; */
+  box-sizing: border-box;
+  display: table-cell;
+  vertical-align: inherit;
 }
 
 /* Style the form submit button */
@@ -390,6 +406,6 @@ input[type="submit"]:hover {
   margin-bottom: 10px;
 }
 
-*, :before, :after {
+/* *, :before, :after {
   box-sizing: border-box;
-}
+} */

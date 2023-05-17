@@ -44,7 +44,9 @@ removeEmployee.addEventListener("click", function (event) {
   }
 });
 
-const cells = document.querySelectorAll("td");
+const table = document.getElementById("datatable");
+const tbody = table.querySelector("tbody");
+const cells = tbody.querySelectorAll("td");
 
 for (let i = 0; i < cells.length; i++) {
   const cell = cells[i];
@@ -93,8 +95,7 @@ for (let i = 0; i < cells.length; i++) {
   }
 }
 
-const table = document.getElementById("datatable");
-const tbody = table.querySelector("tbody");
+
 
 const sortTable = (columnIndex, ascending = true) => {
   const rows = Array.from(tbody.querySelectorAll("tr"));
