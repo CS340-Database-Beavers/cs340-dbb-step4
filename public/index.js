@@ -129,7 +129,52 @@ headerCells.forEach((cell, index) => {
   });
 });
 
+window.addEventListener('DOMContentLoaded', function() {
+  var table = document.getElementById('datatable');
+  var rows = table.getElementsByTagName('tr');
+  
+  var maxWidths = [];
 
+  // Iterate over each column
+  for (var i = 0; i < rows[0].cells.length; i++) {
+    var maxWidth = 0;
+
+    // Iterate over each row in the column
+    for (var j = 0; j < rows.length; j++) {
+      var cell = rows[j].cells[i];
+      var cellWidth = cell.offsetWidth;
+      
+      // Check if the cell contains an input field
+      var inputField = cell.querySelector('input[type="text"]');
+      if (inputField) {
+        cellWidth = inputField.offsetWidth;
+      }
+
+      
+
+      // Update the maximum width if necessary
+      if (cellWidth > maxWidth) {
+        maxWidth = cellWidth-20;
+        // maxWidth = "20px"
+      }
+      console.log("Row " + j + " coloumn " + i + " wdith " + cellWidth)
+    }
+
+    maxWidths.push(maxWidth);
+  }
+  console.log(maxWidths)
+  // Set the width of each input cell in each column
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].getElementsByTagName('td');
+
+    for (var j = 0; j < cells.length; j++) {
+      var inputField = cells[j].querySelector('input[type="text"]');
+      if (inputField) {
+        inputField.style.width = maxWidths[j] + 'px';
+      }
+    }
+  }
+});
 
 
 /**

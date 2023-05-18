@@ -283,6 +283,7 @@ th {
 
 /* Style the table cells */
 td {
+  /* display: flex!important; */
   padding: 10px;
   border-bottom: 1px solid #ccc;
   /* width: 100%; */
@@ -370,17 +371,17 @@ label {
 }
 
 td input{
-  width: 100%;
+  width: 0px;
 }
 
 thead td {
-  /* width: min-content; */
-  height: auto;
+  /* width: 100%; */
+  /* height: auto; */
   /* padding: 20px; */
   /* margin: auto; */
-  box-sizing: border-box;
-  display: table-cell;
-  vertical-align: inherit;
+  /* box-sizing: border-box; */
+  /* display: table-cell; */
+  /* vertical-align: inherit; */
 }
 
 /* Style the form submit button */
