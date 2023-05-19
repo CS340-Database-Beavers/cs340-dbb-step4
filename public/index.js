@@ -95,7 +95,56 @@ for (let i = 0; i < cells.length; i++) {
   }
 }
 
+const searchInput = document.getElementById("searchInput");
+const rows = tbody.getElementsByTagName("tr");
 
+searchInput.addEventListener("keyup", function () {
+  const filter = searchInput.value.toUpperCase();
+
+  for (let i = 0; i < rows.length; i++) {
+    let rowVisible = false;
+    const cells = rows[i].getElementsByTagName("td");
+
+    for (let j = 0; j < cells.length; j++) {
+      const cell = cells[j];
+      const cellValue = cell.textContent || cell.innerText;
+
+      if (cellValue.toUpperCase().indexOf(filter) > -1) {
+        rowVisible = true;
+        break;
+      }
+    }
+
+    rows[i].style.display = rowVisible ? "" : "none";
+  }
+});
+
+// Get all the input elements in the filter row
+const filterInputs = document.querySelectorAll('#input-row input');
+
+// Attach event listeners to each input element
+filterInputs.forEach((input, index) => {
+  input.addEventListener('input', () => {
+    // Get the value entered in the filter input
+    const filterValue = input.value.toLowerCase();
+
+    // Get the index of the corresponding column
+    const columnIndex = index + 1; // Add 1 to skip the first column
+
+    // Get all the cells in the table body of the corresponding column
+    const cells = document.querySelectorAll(`tbody td:nth-child(${columnIndex})`);
+
+    // Loop through each cell and hide/show based on the filter value
+    cells.forEach(cell => {
+      const cellText = cell.textContent.toLowerCase();
+      if (cellText.includes(filterValue)) {
+        cell.parentNode.style.display = '';
+      } else {
+        cell.parentNode.style.display = 'none';
+      }
+    });
+  });
+});
 
 const sortTable = (columnIndex, ascending = true) => {
   const rows = Array.from(tbody.querySelectorAll("tr"));
@@ -131,10 +180,10 @@ headerCells.forEach((cell, index) => {
 
 // function resizeFilterInputs() {}
 
-window.addEventListener('DOMContentLoaded', function() {
-  var table = document.getElementById('datatable');
-  var rows = table.getElementsByTagName('tr');
-  
+window.addEventListener("DOMContentLoaded", function () {
+  var table = document.getElementById("datatable");
+  var rows = table.getElementsByTagName("tr");
+
   var maxWidths = [];
 
   // Iterate over each column
@@ -145,45 +194,43 @@ window.addEventListener('DOMContentLoaded', function() {
     for (var j = 0; j < rows.length; j++) {
       var cell = rows[j].cells[i];
       var cellWidth = cell.offsetWidth;
-      
+
       // Check if the cell contains an input field
       var inputField = cell.querySelector('input[type="text"]');
       if (inputField) {
         cellWidth = inputField.offsetWidth;
       }
 
-      
-
       // Update the maximum width if necessary
       if (cellWidth > maxWidth) {
-        maxWidth = cellWidth-20;
+        maxWidth = cellWidth - 20;
         // maxWidth = "20px"
       }
-      console.log("Row " + j + " coloumn " + i + " wdith " + cellWidth)
+      console.log("Row " + j + " coloumn " + i + " wdith " + cellWidth);
     }
 
     maxWidths.push(maxWidth);
   }
-  console.log(maxWidths)
+  console.log(maxWidths);
   // Set the width of each input cell in each column
   for (var i = 0; i < rows.length; i++) {
-    var cells = rows[i].getElementsByTagName('td');
+    var cells = rows[i].getElementsByTagName("td");
 
     for (var j = 0; j < cells.length; j++) {
       var inputField = cells[j].querySelector('input[type="text"]');
       if (inputField) {
-        inputField.style.width = maxWidths[j] + 'px';
+        inputField.style.width = maxWidths[j] + "px";
       }
     }
   }
 });
 
-const filterBtn = document.getElementById("filterToggleBtn")
-filterBtn.addEventListener("click", function() {
+const filterBtn = document.getElementById("filterToggleBtn");
+filterBtn.addEventListener("click", function () {
   var filterRow = document.getElementById("input-row");
-  const filtered = !filterRow.classList.contains("d-hidden")
-  filterRow.classList.toggle("d-hidden", filtered)
-})
+  const filtered = !filterRow.classList.contains("d-hidden");
+  filterRow.classList.toggle("d-hidden", filtered);
+});
 
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.
@@ -226,9 +273,7 @@ filterBtn.addEventListener("click", function() {
 // const form = document.getElementsByTagName("form")[0];
 // form.addEventListener("submit", handleFormSubmit);
 
-
 // Sample data for the table
-
 
 // // Get table elements
 // const dataInfo = document.getElementById('dataInfo');
