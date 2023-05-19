@@ -129,6 +129,8 @@ headerCells.forEach((cell, index) => {
   });
 });
 
+// function resizeFilterInputs() {}
+
 window.addEventListener('DOMContentLoaded', function() {
   var table = document.getElementById('datatable');
   var rows = table.getElementsByTagName('tr');
@@ -176,6 +178,12 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+const filterBtn = document.getElementById("filterToggleBtn")
+filterBtn.addEventListener("click", function() {
+  var filterRow = document.getElementById("input-row");
+  const filtered = !filterRow.classList.contains("d-hidden")
+  filterRow.classList.toggle("d-hidden", filtered)
+})
 
 /**
 //  * Retrieves input data from a form and returns it as a JSON object.
