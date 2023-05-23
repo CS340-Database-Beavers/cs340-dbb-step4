@@ -37,7 +37,7 @@ app.get("/", function (req, res) {
 app.get("/readData", function (req, res, next) {
   try{
     res.header("Content-Type",'application/json')
-    res.status(200).send(JSON.stringify(data['employee']));
+    res.status(200).send(JSON.stringify(data[req.headers.page]));
   } catch(err) {
     res.status(500).send("Failed to read data: " + err);
   }

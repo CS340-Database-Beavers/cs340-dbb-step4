@@ -47,15 +47,22 @@ function addData() {
  * @param {number} currentPage The current page index of pageSize rows to be shown
  */
 function renderTable(pageSize, currentPage, columnIndex, ascending = true) {
+  var page = table.className
   const getData = fetch("/readData", {
     headers: {
       "Content-Type": "application/json",
-      page: JSON.stringify(table.className),
+      "page": page,
     },
   })
-    .then((response) => response.json())
+  .then(response => {
+    console.log(response)
+    if (!response.ok) {
+      throw new Error('Network response was not OK');
+    }
+    return response.json();
+  })
     .then((data) => {
-      console.log(data.length);
+      // console.log(repsonse);
 
       const sortFn = (a, b) => {
         var keyA = Object.keys(a)[columnIndex]; 
@@ -109,9 +116,12 @@ function renderTable(pageSize, currentPage, columnIndex, ascending = true) {
         console.log("page making");
         const button = document.createElement("button");
         button.textContent = i;
-        button.addEventListener("click", handlePaginationNavigation());
+        button.addEventListener("click", handlePaginationNavigation);
         pagination.appendChild(button);
       }
+    }).catch(error => {
+      // Handle any errors that occurred during the request
+      console.error('Error:', error);
     });
 }
 
