@@ -10,10 +10,10 @@ const rows = tbody.getElementsByTagName("tr");
 const cells = tbody.querySelectorAll("td");
 
 const searchInput = document.getElementById("searchInput");
-const filterInputs = document.querySelectorAll('#input-row input');
+const filterInputs = document.querySelectorAll("#input-row input");
 const filterBtn = document.getElementById("filterToggleBtn");
-const dataInfo = document.getElementById('dataInfo');
-const pagination = document.getElementById('pagination');
+const dataInfo = document.getElementById("dataInfo");
+const pagination = document.getElementById("pagination");
 const forminputs = document.getElementsByClassName("datainput");
 
 var tableDataLength = 0;
@@ -46,63 +46,73 @@ function addData() {
  * @param {number} pageSize The number of rows per page
  * @param {number} currentPage The current page index of pageSize rows to be shown
  */
-function renderTable(pageSize, currentPage) {
+function renderTable(pageSize, currentPage, columnIndex, ascending = true) {
   const getData = fetch("/readData", {
     headers: {
       "Content-Type": "application/json",
-      "page": JSON.stringify(table.className),
+      page: JSON.stringify(table.className),
     },
-  }).then((response) => response.json()).then((data) => {
-  console.log(data.length)
-  tbody.innerHTML = ''; // Clear existing table
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.length);
 
-  // Calculate the start and end index of the current page
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
+      const sortFn = (a, b) => {
+        var keyA = Object.keys(a)[columnIndex]; 
+        var keyB = Object.keys(b)[columnIndex]; 
+        if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
+        if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
+        return 0; // If the values are equal
+      };
+      data.sort(sortFn);
+      tbody.innerHTML = ""; // Clear existing table
 
-  tableDataLength = data.length
+      // Calculate the start and end index of the current page
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
 
-  // Iterate over the data and create table rows
-  for (let i = startIndex; i < endIndex && i < data.length; i++) {
-    const row = document.createElement('tr');
-    row.id = i;
-    // Add table cells
-    for(var key in data[i]) {
-      var newCell = document.createElement('td');
-      newCell.textContent = data[i][key];
-      newCell.classList.add(key);
-      row.appendChild(newCell);
-    }
+      // Iterate over the data and create table rows
+      for (let i = startIndex; i < endIndex && i < data.length; i++) {
+        const row = document.createElement("tr");
+        row.id = i;
+        // Add table cells
+        for (var key in data[i]) {
+          var newCell = document.createElement("td");
+          newCell.textContent = data[i][key];
+          newCell.classList.add(key);
+          row.appendChild(newCell);
+        }
 
-    const removeCell = document.createElement('td');
-    removeCell.innerHTML = '&#128465';
-    removeCell.align = "center";
-    removeCell.classList.add("removeicon");
-    row.appendChild(removeCell);
+        const removeCell = document.createElement("td");
+        removeCell.innerHTML = "&#128465";
+        removeCell.align = "center";
+        removeCell.classList.add("removeicon");
+        row.appendChild(removeCell);
 
-    // Add the row to the table
-    table.appendChild(row);
-  }
+        // Add the row to the table
+        tbody.appendChild(row);
+        resizeTable();
+      }
 
-  // Update data info
-  const startInfo = startIndex + 1;
-  const endInfo = Math.min(endIndex, data.length);
-  dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
+      // Update data info
+      const startInfo = startIndex + 1;
+      const endInfo = Math.min(endIndex, data.length);
+      dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
 
-  pagination.innerHTML = ''; // Clear existing pagination
-  
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(data.length / pageSize);
-  console.log(data.length + ' / ' + pageSize + ' = ' + totalPages)
-  // Create pagination buttons
-  for (let i = 1; i <= totalPages; i++) {
-    console.log("page making")
-    const button = document.createElement('button');
-    button.textContent = i;
-    button.addEventListener('click', handlePaginationNavigation());
-    pagination.appendChild(button);
-  }
-});
+      pagination.innerHTML = ""; // Clear existing pagination
+
+      // Calculate the total number of pages
+      const totalPages = Math.ceil(data.length / pageSize);
+      console.log(data.length + " / " + pageSize + " = " + totalPages);
+      // Create pagination buttons
+      for (let i = 1; i <= totalPages; i++) {
+        console.log("page making");
+        const button = document.createElement("button");
+        button.textContent = i;
+        button.addEventListener("click", handlePaginationNavigation());
+        pagination.appendChild(button);
+      }
+    });
 }
 
 // Function to handle entries per page change
@@ -115,7 +125,7 @@ function handleEntriesPerPageChange() {
 
 // Function to handle pagination navigation
 function handlePaginationNavigation() {
-  const pageSize = parseInt(document.getElementById('entriesDropdown').value);
+  const pageSize = parseInt(document.getElementById("entriesDropdown").value);
   const currentPage = parseInt(this.textContent);
   // renderTable(pageSize, currentPage);
   // renderPagination(pageSize, currentPage);
@@ -124,7 +134,7 @@ function handlePaginationNavigation() {
 // Function to render pagination
 // function renderPagination(pageSize, currentPage) {
 //   pagination.innerHTML = ''; // Clear existing pagination
-  
+
 //   // Calculate the total number of pages
 //   const totalPages = Math.ceil(tableDataLength / pageSize);
 //   console.log(tableDataLength + ' / ' + pageSize + ' = ' + totalPages)
@@ -145,6 +155,7 @@ function handlePaginationNavigation() {
  */
 const sortTable = (columnIndex, ascending = true) => {
   const rows = Array.from(tbody.querySelectorAll("tr"));
+  console.log(rows);
   const sortFn = (a, b) => {
     const cellA = a.cells[columnIndex].textContent;
     const cellB = b.cells[columnIndex].textContent;
@@ -250,7 +261,7 @@ searchInput.addEventListener("keyup", function () {
 
 // Attach event listeners to each input element
 filterInputs.forEach((input, index) => {
-  input.addEventListener('input', () => {
+  input.addEventListener("input", () => {
     // Get the value entered in the filter input
     const filterValue = input.value.toLowerCase();
 
@@ -258,15 +269,17 @@ filterInputs.forEach((input, index) => {
     const columnIndex = index + 1; // Add 1 to skip the first column
 
     // Get all the cells in the table body of the corresponding column
-    const cells = document.querySelectorAll(`tbody td:nth-child(${columnIndex})`);
+    const cells = document.querySelectorAll(
+      `tbody td:nth-child(${columnIndex})`
+    );
 
     // Loop through each cell and hide/show based on the filter value
-    cells.forEach(cell => {
+    cells.forEach((cell) => {
       const cellText = cell.textContent.toLowerCase();
       if (cellText.includes(filterValue)) {
-        cell.parentNode.style.display = '';
+        cell.parentNode.style.display = "";
       } else {
-        cell.parentNode.style.display = 'none';
+        cell.parentNode.style.display = "none";
       }
     });
   });
@@ -285,7 +298,8 @@ headerCells.forEach((cell, index) => {
     }
     cell.classList.toggle("sorted-asc", ascending && descending);
     cell.classList.toggle("sorted-desc", !ascending);
-    sortTable(sortIndex, ascending);
+    const pageSize = parseInt(document.getElementById("entriesDropdown").value);
+    renderTable(pageSize, 1, sortIndex, ascending);
   });
 });
 
@@ -331,7 +345,7 @@ function resizeTable() {
       }
     }
   }
-};
+}
 
 filterBtn.addEventListener("click", function () {
   var filterRow = document.getElementById("input-row");
@@ -339,7 +353,9 @@ filterBtn.addEventListener("click", function () {
   filterRow.classList.toggle("d-hidden", filtered);
 });
 
-document.getElementById('entriesDropdown').addEventListener('change', handleEntriesPerPageChange);
+document
+  .getElementById("entriesDropdown")
+  .addEventListener("change", handleEntriesPerPageChange);
 // document.getElementById('filterToggleBtn').addEventListener('click', toggleFilterRow);
 
 /**
@@ -386,5 +402,5 @@ document.getElementById('entriesDropdown').addEventListener('change', handleEntr
 // Initial render
 const initialPageSize = 10;
 const initialCurrentPage = 1;
-renderTable(initialPageSize, initialCurrentPage);
+renderTable(initialPageSize, initialCurrentPage, 0);
 // renderPagination(initialPageSize, initialCurrentPage);
