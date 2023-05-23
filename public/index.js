@@ -1,3 +1,5 @@
+// const { response } = require("express");
+
 // Object definitions
 const submit = document.getElementById("submit");
 
@@ -14,6 +16,7 @@ const dataInfo = document.getElementById('dataInfo');
 const pagination = document.getElementById('pagination');
 const forminputs = document.getElementsByClassName("datainput");
 
+var tableDataLength = 0;
 // ---------Functions---------
 
 /**
@@ -44,37 +47,38 @@ function addData() {
  * @param {number} currentPage The current page index of pageSize rows to be shown
  */
 function renderTable(pageSize, currentPage) {
-  const data = fetch("/readData", {
-    method: "POST",
-    body: JSON.stringify({
-      name: table.className,
-    }),
+  const getData = fetch("/readData", {
     headers: {
       "Content-Type": "application/json",
+      "page": JSON.stringify(table.className),
     },
-  });
-  table.innerHTML = ''; // Clear existing table
+  }).then((response) => response.json()).then((data) => {
+  console.log(data.length)
+  tbody.innerHTML = ''; // Clear existing table
 
   // Calculate the start and end index of the current page
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
 
+  tableDataLength = data.length
+
   // Iterate over the data and create table rows
   for (let i = startIndex; i < endIndex && i < data.length; i++) {
     const row = document.createElement('tr');
-
+    row.id = i;
     // Add table cells
-    const idCell = document.createElement('td');
-    idCell.textContent = data[i].id;
-    row.appendChild(idCell);
+    for(var key in data[i]) {
+      var newCell = document.createElement('td');
+      newCell.textContent = data[i][key];
+      newCell.classList.add(key);
+      row.appendChild(newCell);
+    }
 
-    const nameCell = document.createElement('td');
-    nameCell.textContent = data[i].name;
-    row.appendChild(nameCell);
-
-    const ageCell = document.createElement('td');
-    ageCell.textContent = data[i].age;
-    row.appendChild(ageCell);
+    const removeCell = document.createElement('td');
+    removeCell.innerHTML = '&#128465';
+    removeCell.align = "center";
+    removeCell.classList.add("removeicon");
+    row.appendChild(removeCell);
 
     // Add the row to the table
     table.appendChild(row);
@@ -84,39 +88,55 @@ function renderTable(pageSize, currentPage) {
   const startInfo = startIndex + 1;
   const endInfo = Math.min(endIndex, data.length);
   dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
+
+  pagination.innerHTML = ''; // Clear existing pagination
+  
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(data.length / pageSize);
+  console.log(data.length + ' / ' + pageSize + ' = ' + totalPages)
+  // Create pagination buttons
+  for (let i = 1; i <= totalPages; i++) {
+    console.log("page making")
+    const button = document.createElement('button');
+    button.textContent = i;
+    button.addEventListener('click', handlePaginationNavigation());
+    pagination.appendChild(button);
+  }
+});
 }
 
 // Function to handle entries per page change
 function handleEntriesPerPageChange() {
   const pageSize = parseInt(this.value);
   const currentPage = 1;
-  renderTable(pageSize, currentPage);
-  renderPagination(pageSize, currentPage);
+  // renderTable(pageSize, currentPage);
+  // renderPagination(pageSize, currentPage);
 }
 
 // Function to handle pagination navigation
 function handlePaginationNavigation() {
   const pageSize = parseInt(document.getElementById('entriesDropdown').value);
   const currentPage = parseInt(this.textContent);
-  renderTable(pageSize, currentPage);
-  renderPagination(pageSize, currentPage);
+  // renderTable(pageSize, currentPage);
+  // renderPagination(pageSize, currentPage);
 }
 
 // Function to render pagination
-function renderPagination(pageSize, currentPage) {
-  pagination.innerHTML = ''; // Clear existing pagination
-
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(data.length / pageSize);
-
-  // Create pagination buttons
-  for (let i = 1; i <= totalPages; i++) {
-    const button = document.createElement('button');
-    button.textContent = i;
-    button.addEventListener('click', handlePaginationNavigation);
-    pagination.appendChild(button);
-  }
-}
+// function renderPagination(pageSize, currentPage) {
+//   pagination.innerHTML = ''; // Clear existing pagination
+  
+//   // Calculate the total number of pages
+//   const totalPages = Math.ceil(tableDataLength / pageSize);
+//   console.log(tableDataLength + ' / ' + pageSize + ' = ' + totalPages)
+//   // Create pagination buttons
+//   for (let i = 1; i <= totalPages; i++) {
+//     console.log("page making")
+//     const button = document.createElement('button');
+//     button.textContent = i;
+//     button.addEventListener('click', handlePaginationNavigation());
+//     pagination.appendChild(button);
+//   }
+// }
 
 /**
  * Function to sort data table by a certain column
@@ -269,19 +289,18 @@ headerCells.forEach((cell, index) => {
   });
 });
 
-window.addEventListener("DOMContentLoaded", function () {
-  var table = document.getElementById("datatable");
-  var rows = table.getElementsByTagName("tr");
+function resizeTable() {
+  var tablerows = table.getElementsByTagName("tr");
 
   var maxWidths = [];
 
   // Iterate over each column
-  for (var i = 0; i < rows[0].cells.length; i++) {
+  for (var i = 0; i < tablerows[0].cells.length; i++) {
     var maxWidth = 0;
 
     // Iterate over each row in the column
-    for (var j = 0; j < rows.length; j++) {
-      var cell = rows[j].cells[i];
+    for (var j = 0; j < tablerows.length; j++) {
+      var cell = tablerows[j].cells[i];
       var cellWidth = cell.offsetWidth;
 
       // Check if the cell contains an input field
@@ -302,8 +321,8 @@ window.addEventListener("DOMContentLoaded", function () {
   }
   console.log(maxWidths);
   // Set the width of each input cell in each column
-  for (var i = 0; i < rows.length; i++) {
-    var cells = rows[i].getElementsByTagName("td");
+  for (var i = 0; i < tablerows.length; i++) {
+    var cells = tablerows[i].getElementsByTagName("td");
 
     for (var j = 0; j < cells.length; j++) {
       var inputField = cells[j].querySelector('input[type="text"]');
@@ -312,7 +331,7 @@ window.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-});
+};
 
 filterBtn.addEventListener("click", function () {
   var filterRow = document.getElementById("input-row");
@@ -368,4 +387,4 @@ document.getElementById('entriesDropdown').addEventListener('change', handleEntr
 const initialPageSize = 10;
 const initialCurrentPage = 1;
 renderTable(initialPageSize, initialCurrentPage);
-renderPagination(initialPageSize, initialCurrentPage);
+// renderPagination(initialPageSize, initialCurrentPage);
