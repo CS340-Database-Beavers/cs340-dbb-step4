@@ -23,15 +23,27 @@
         id="Layer_1"
         viewBox="0 0 512 512"
         xml:space="preserve"
-      > <g> <g> <polygon
+      >
+        <g>
+          <g>
+            <polygon
               points="222.949,302.964 222.949,512 289.051,467.933 289.051,302.964"
-            /> </g> </g> <g> <g> <rect
-              x="2.612"
-              width="506.776"
-              height="49.576"
-            /> </g> </g> <g> <g> <polygon
+            />
+          </g>
+        </g>
+        <g>
+          <g>
+            <rect x="2.612" width="506.776" height="49.576" />
+          </g>
+        </g>
+        <g>
+          <g>
+            <polygon
               points="19.137,82.627 206.424,269.913 305.576,269.913 492.863,82.627"
-            /> </g> </g> </svg>
+            />
+          </g>
+        </g>
+      </svg>
     </button>
     <label class="form-label">
       <input
@@ -49,41 +61,40 @@
         aria-expanded="false"
         title="Actions"
         style="cursor: pointer; font-size: 20px; line-height: 33.5px; padding-left: 5px; font-weight:900; width: 21px; text-align: center; color: #6c757d;"
-      > ⋮ </div>
-    </div>
+      >
+        ⋮
       </div>
+    </div>
   </div>
-  <table class={{page}} id="datatable">
-    <thead>
-      <tr>
-        {{#each tableData.[0]}}
-          <th>{{@key}}</th>
-        {{/each}}
-        <th>Remove</th>
-      </tr>
-      <tr id="input-row" class="d-hidden">
-        {{#each tableData.[0]}}
-          <td> <input type="text"> </td>
-        {{/each}}
-        <td></td>
-      </tr>
-    </thead>
-    <tbody>
-
-      {{#each tableData}}
-        <tr id={{@index}}>
-          {{#each this}}
-            <td class={{@key}}>{{this}}</td>
-          {{/each}}
-          <td
-            align="center"
-            style="padding: 0px"
-            class="removeicon"
-          >&#128465</td>
-        </tr>
+</div>
+<table class={{page}} id="datatable">
+  <thead>
+    <tr>
+      {{#each tableData.[0]}}
+        <th>{{@key}}</th>
       {{/each}}
-    </tbody>
-  </table>
+      <th>Remove</th>
+    </tr>
+    <tr id="input-row" class="d-hidden">
+      {{#each tableData.[0]}}
+        <td> <input type="text" /> </td>
+      {{/each}}
+      <td></td>
+    </tr>
+  </thead>
+  <tbody>
+
+    {{#each tableData}}
+      <tr id={{@index}}>
+        {{#each this}}
+          <td class={{@key}}>{{this}}</td>
+        {{/each}}
+        <td align="center" style="padding: 0px" class="removeicon">&#128465</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+<div>
   <div id="dataInfo"> </div>
   <div id="pagination"> </div>
 </div>

@@ -318,6 +318,10 @@ function resizeTable() {
 
   var maxWidths = [];
 
+  var filterRow = document.getElementById("input-row");
+  const filtered = filterRow.classList.contains("d-hidden");
+  filterRow.classList.toggle("d-hidden", true);
+
   // Iterate over each column
   for (var i = 0; i < tablerows[0].cells.length; i++) {
     var maxWidth = 0;
@@ -355,7 +359,10 @@ function resizeTable() {
       }
     }
   }
+  filterRow.classList.toggle("d-hidden", filtered);
 }
+
+window.onresize = resizeTable;
 
 filterBtn.addEventListener("click", function () {
   var filterRow = document.getElementById("input-row");
