@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS employees (
   employee_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   hire_date DATE NOT NULL,
   name VARCHAR(45) NOT NULL,
-  role INT UNSIGNED NOT NULL,
+  role INT UNSIGNED NULL, -- changed to NULLable for 1:M partial participation / NULLable FK requirement
   is_active TINYINT(1) NOT NULL,
   address VARCHAR(45) NULL,
   birthdate DATE NOT NULL, -- changed to be NOT NULL for duplicate checks
