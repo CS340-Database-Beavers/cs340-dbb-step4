@@ -1,4 +1,4 @@
-[Assignment directions](https://canvas.oregonstate.edu/courses/1914742/assignments/9185733)
+[Assignment directions](https://canvas.oregonstate.edu/courses/1914742/assignments/9185736)
 
 # Objective
 
