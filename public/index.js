@@ -7,7 +7,6 @@ const table = document.getElementById("datatable");
 const headerCells = table.querySelectorAll("th");
 const tbody = table.querySelector("tbody");
 const rows = tbody.getElementsByTagName("tr");
-const cells = tbody.querySelectorAll("td");
 
 const searchInput = document.getElementById("searchInput");
 const filterInputs = document.querySelectorAll("#input-row input");
@@ -46,40 +45,25 @@ function addData() {
  * @param {number} pageSize The number of rows per page
  * @param {number} currentPage The current page index of pageSize rows to be shown
  */
-function renderTable(pageSize, currentPage, columnIndex, ascending = true) {
-  var page = table.className
+function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
+  var page = table.className;
   const getData = fetch("/readData", {
     headers: {
       "Content-Type": "application/json",
-      "page": page,
+      page: page,
     },
   })
-  .then(response => {
-    console.log(response)
-    if (!response.ok) {
-      throw new Error('Network response was not OK');
-    }
-    return response.json();
-  })
+    .then((response) => {
+      // console.log(response)
+      if (!response.ok) {
+        throw new Error("Network response was not OK");
+      }
+      return response.json();
+    })
     .then((data) => {
       // console.log(repsonse);
-
-      const sortFn = (a, b) => {
-        var keyA = Object.keys(a)[columnIndex]; 
-        var keyB = Object.keys(b)[columnIndex]; 
-        if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
-        if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
-        return 0; // If the values are equal
-      };
-      data.sort(sortFn);
-      tbody.innerHTML = ""; // Clear existing table
-
-      // Calculate the start and end index of the current page
-      const startIndex = (currentPage - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-
-      // Iterate over the data and create table rows
-      for (let i = startIndex; i < endIndex && i < data.length; i++) {
+      var rows = [];
+      for (var i = 0; i < data.length; i++) {
         const row = document.createElement("tr");
         row.id = i;
         // Add table cells
@@ -96,8 +80,81 @@ function renderTable(pageSize, currentPage, columnIndex, ascending = true) {
         removeCell.classList.add("removeicon");
         row.appendChild(removeCell);
 
+        rows[i] = row;
+      }
+
+      // const sortFn = (a, b) => {
+      //   var keyA = Object.keys(a)[columnIndex];
+      //   var keyB = Object.keys(b)[columnIndex];
+      //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
+      //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
+      //   return 0; // If the values are equal
+      // };
+      const sortFn = (a, b) => {
+        const cellA = isNaN(parseFloat(a.cells[sortIndex].textContent))
+          ? a.cells[sortIndex].textContent
+          : parseFloat(a.cells[sortIndex].textContent);
+        const cellB = isNaN(parseFloat(b.cells[sortIndex].textContent))
+          ? b.cells[sortIndex].textContent
+          : parseFloat(b.cells[sortIndex].textContent);
+        if (cellA < cellB) return ascending ? -1 : 1;
+        if (cellA > cellB) return ascending ? 1 : -1;
+        return 0;
+      };
+      rows.sort(sortFn);
+
+      const filter = searchInput.value.toUpperCase();
+      rowsToFilter = []
+      for (let i = 0; i < rows.length; i++) {
+        let rowVisible = false;
+        const cells = rows[i].childNodes;
+
+        for (let j = 0; j < cells.length; j++) {
+          const cell = cells[j];
+          const cellValue = cell.textContent || cell.innerText;
+          // console.log(cellValue.toUpperCase().indexOf(filter) + " and " + cellValue.toUpperCase().indexOf(filterInputs[j].value.toUpperCase()))
+          console.log(filterInputs[j].value.toUpperCase())
+
+          if (cellValue.toUpperCase().indexOf(filter) > -1 && cellValue.toUpperCase().indexOf(filterInputs[j].value.toUpperCase()) > -1) {
+            rowVisible = true;
+            break;
+          }
+        }
+
+        if (!rowVisible) {
+          rowsToFilter.push(i)
+        }
+      }
+      for (var i = 0; i < rowsToFilter.length; i++){
+        rows.splice(i, 1);
+      }
+
+      tbody.innerHTML = ""; // Clear existing table
+
+      // Calculate the start and end index of the current page
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+
+      // Iterate over the data and create table rows
+      for (let i = startIndex; i < endIndex && i < rows.length; i++) {
+        // const row = document.createElement("tr");
+        // row.id = i;
+        // // Add table cells
+        // for (var key in data[i]) {
+        //   var newCell = document.createElement("td");
+        //   newCell.textContent = data[i][key];
+        //   newCell.classList.add(key);
+        //   row.appendChild(newCell);
+        // }
+
+        // const removeCell = document.createElement("td");
+        // removeCell.innerHTML = "&#128465";
+        // removeCell.align = "center";
+        // removeCell.classList.add("removeicon");
+        // row.appendChild(removeCell);
+
         // Add the row to the table
-        tbody.appendChild(row);
+        tbody.appendChild(rows[i]);
         resizeTable();
       }
 
@@ -110,18 +167,19 @@ function renderTable(pageSize, currentPage, columnIndex, ascending = true) {
 
       // Calculate the total number of pages
       const totalPages = Math.ceil(data.length / pageSize);
-      console.log(data.length + " / " + pageSize + " = " + totalPages);
+      // console.log(data.length + " / " + pageSize + " = " + totalPages);
       // Create pagination buttons
       for (let i = 1; i <= totalPages; i++) {
-        console.log("page making");
+        // console.log("page making");
         const button = document.createElement("button");
         button.textContent = i;
         button.addEventListener("click", handlePaginationNavigation);
         pagination.appendChild(button);
       }
-    }).catch(error => {
+    })
+    .catch((error) => {
       // Handle any errors that occurred during the request
-      console.error('Error:', error);
+      console.error("Error:", error);
     });
 }
 
@@ -165,7 +223,6 @@ function handlePaginationNavigation() {
  */
 const sortTable = (columnIndex, ascending = true) => {
   const rows = Array.from(tbody.querySelectorAll("tr"));
-  console.log(rows);
   const sortFn = (a, b) => {
     const cellA = a.cells[columnIndex].textContent;
     const cellB = b.cells[columnIndex].textContent;
@@ -201,72 +258,92 @@ table.addEventListener("click", function (event) {
   }
 });
 
-for (let i = 0; i < cells.length; i++) {
-  const cell = cells[i];
-  if (cell.classList.contains("ID") || cell.classList.contains("removeicon")) {
-    continue;
-  }
-
-  cell.addEventListener("mouseover", () => {
-    cell.classList.add("editing");
-  });
-
-  cell.addEventListener("mouseout", () => {
-    cell.classList.remove("editing");
-  });
-
-  cell.addEventListener("dblclick", () => {
-    cell.contentEditable = "true";
-    cell.focus();
-  });
-
-  cell.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      editData();
+table.addEventListener("mouseover", function () {
+  var cells = tbody.querySelectorAll("td");
+  for (
+    let i = 0;
+    i < 8 * parseInt(document.getElementById("entriesDropdown").value);
+    i++
+  ) {
+    const cell = cells[i];
+    if (
+      cell.classList.contains("ID") ||
+      cell.classList.contains("removeicon")
+    ) {
+      continue;
     }
-  });
 
-  cell.addEventListener("blur", () => editData());
-
-  function editData() {
-    cell.contentEditable = "false";
-    cell.classList.remove("editing");
-    fetch("/editData", {
-      method: "POST",
-      body: JSON.stringify({
-        index: cell.parentNode.id,
-        key: cell.className,
-        newString: cell.textContent,
-        page: cell.parentNode.parentNode.parentNode.className,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    cell.addEventListener("mouseover", () => {
+      cell.classList.add("editing");
     });
-    // location.reload();
+
+    cell.addEventListener("mouseout", () => {
+      cell.classList.remove("editing");
+    });
+
+    cell.addEventListener("dblclick", () => {
+      cell.contentEditable = "true";
+      cell.focus();
+    });
+
+    cell.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        editData();
+      }
+    });
+
+    cell.addEventListener("blur", () => editData());
+
+    function editData() {
+      cell.contentEditable = "false";
+      cell.classList.remove("editing");
+      fetch("/editData", {
+        method: "POST",
+        body: JSON.stringify({
+          index: cell.parentNode.id,
+          key: cell.className,
+          newString: cell.textContent,
+          page: cell.parentNode.parentNode.parentNode.className,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      // location.reload();
+    }
   }
-}
+});
 
 searchInput.addEventListener("keyup", function () {
-  const filter = searchInput.value.toUpperCase();
+  // var sortIndex = 0;
+  // var sortasc = true;
+  // headerCells.forEach((cell, index) => {
+  //   if (cell.classList.contains("sorted-asc") || cell.classList.contains("sorted-desc")){
+  //     sortasc = !cell.classList.contains("sorted-asc");
+  //     sortIndex = index;
+  //   }
+  // });
+  const pageSize = parseInt(document.getElementById("entriesDropdown").value);
+  renderTable(pageSize, 1, 0)
+  // const filter = searchInput.value.toUpperCase();
 
-  for (let i = 0; i < rows.length; i++) {
-    let rowVisible = false;
-    const cells = rows[i].getElementsByTagName("td");
+  // for (let i = 0; i < rows.length; i++) {
+  //   let rowVisible = false;
+  //   const cells = rows[i].getElementsByTagName("td");
 
-    for (let j = 0; j < cells.length; j++) {
-      const cell = cells[j];
-      const cellValue = cell.textContent || cell.innerText;
+  //   for (let j = 0; j < cells.length; j++) {
+  //     const cell = cells[j];
+  //     const cellValue = cell.textContent || cell.innerText;
 
-      if (cellValue.toUpperCase().indexOf(filter) > -1) {
-        rowVisible = true;
-        break;
-      }
-    }
+  //     if (cellValue.toUpperCase().indexOf(filter) > -1) {
+  //       rowVisible = true;
+  //       break;
+  //     }
+  //   }
 
-    rows[i].style.display = rowVisible ? "" : "none";
-  }
+  //   rows[i].style.display = rowVisible ? "" : "none";
+  // }
 });
 
 // Attach event listeners to each input element
@@ -342,12 +419,12 @@ function resizeTable() {
         maxWidth = cellWidth - 20;
         // maxWidth = "20px"
       }
-      console.log("Row " + j + " coloumn " + i + " wdith " + cellWidth);
+      // console.log("Row " + j + " coloumn " + i + " wdith " + cellWidth);
     }
 
     maxWidths.push(maxWidth);
   }
-  console.log(maxWidths);
+  // console.log(maxWidths);
   // Set the width of each input cell in each column
   for (var i = 0; i < tablerows.length; i++) {
     var cells = tablerows[i].getElementsByTagName("td");
