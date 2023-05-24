@@ -18,8 +18,6 @@ WHERE role_id=%%role_id%%;
 
 -- Retrieve the number of working employees for each role
 -- Useful for seeing the skill areas a company may need to fill/cut
--- Retrieve the number of working employees for each role
--- Useful for seeing the skill areas a company may need to fill/cut
 SELECT r.role_id as "role_id", r.role_name, SUM(1) as "number of workers"
 FROM employees as e, roles as r
 WHERE e.role = r.role_id
