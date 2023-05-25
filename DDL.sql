@@ -1,4 +1,4 @@
----------------------- Creating the tables ---------------------------
+-- -------------------- Creating the tables ---------------------------
 
 DROP TABLE IF EXISTS employees_projects;
 DROP TABLE IF EXISTS salaries;
@@ -105,7 +105,7 @@ DESCRIBE projects;
 DESCRIBE employees_projects;
 
 
----------------------- Filling the tables ---------------------------
+-- -------------------- Filling the tables ---------------------------
 
 INSERT INTO roles VALUES
 (DEFAULT, "CEO of Beavers for Better"),

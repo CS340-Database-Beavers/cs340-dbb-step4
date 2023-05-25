@@ -61,11 +61,11 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       return response.json();
     })
     .then((data) => {
-      // console.log(repsonse);
+      console.log(data);
       var rows = [];
       for (var i = 0; i < data.length; i++) {
         const row = document.createElement("tr");
-        row.id = i;
+        row.id = data[i][Object.keys(data[i])[0]];
         // Add table cells
         for (var key in data[i]) {
           var newCell = document.createElement("td");
@@ -260,6 +260,7 @@ table.addEventListener("click", function (event) {
       fetch("/removeData", {
         method: "POST",
         body: JSON.stringify({
+          pageID: event.target.parentNode.firstChild.className,
           index: event.target.parentNode.id,
           page: event.target.parentNode.parentNode.parentNode.className,
         }),
@@ -315,6 +316,7 @@ table.addEventListener("mouseover", function () {
       fetch("/editData", {
         method: "POST",
         body: JSON.stringify({
+          pageID: cell.parentNode.firstChild.className,
           index: cell.parentNode.id,
           key: cell.className,
           newString: cell.textContent,
