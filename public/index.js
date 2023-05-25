@@ -112,21 +112,35 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
         for (let j = 0; j < cells.length; j++) {
           const cell = cells[j];
           const cellValue = cell.textContent || cell.innerText;
-          // console.log(cellValue.toUpperCase().indexOf(filter) + " and " + cellValue.toUpperCase().indexOf(filterInputs[j].value.toUpperCase()))
-          console.log(filterInputs[j].value.toUpperCase())
-
-          if (cellValue.toUpperCase().indexOf(filter) > -1 && cellValue.toUpperCase().indexOf(filterInputs[j].value.toUpperCase()) > -1) {
-            rowVisible = true;
+          if(filterInputs[j]){
+            var colFilter = filterInputs[j].value.toUpperCase();
+          } else {
+            var colFilter = '';
+          }
+          // console.log(filterInputs[j].value.toUpperCase())
+          
+          // if (cellValue.toUpperCase().indexOf(filter) > -1) {
+          //   rowVisible = true;
+          //   break;
+          // }
+          // const filterInputs = document.querySelectorAll("#input-row input");
+          console.log("row " + i + ' ' + cellValue.toUpperCase().indexOf(filter) + " and " + cellValue.toUpperCase().indexOf(colFilter))
+          // console.log("col " + j + " filter " + colFilter)
+          if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
+            rowVisible = false;
             break;
+          } else if (cellValue.toUpperCase().indexOf(filter) > -1) {
+            rowVisible = true;
           }
         }
 
         if (!rowVisible) {
-          rowsToFilter.push(i)
+          rowsToFilter.unshift(i)
         }
       }
       for (var i = 0; i < rowsToFilter.length; i++){
-        rows.splice(i, 1);
+        console.log("Filtering row: " + rowsToFilter[i])
+        rows.splice(rowsToFilter[i], 1);
       }
 
       tbody.innerHTML = ""; // Clear existing table
@@ -187,7 +201,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
 function handleEntriesPerPageChange() {
   const pageSize = parseInt(this.value);
   const currentPage = 1;
-  // renderTable(pageSize, currentPage);
+  renderTable(pageSize, currentPage, 0);
   // renderPagination(pageSize, currentPage);
 }
 
@@ -195,7 +209,7 @@ function handleEntriesPerPageChange() {
 function handlePaginationNavigation() {
   const pageSize = parseInt(document.getElementById("entriesDropdown").value);
   const currentPage = parseInt(this.textContent);
-  // renderTable(pageSize, currentPage);
+  renderTable(pageSize, currentPage, 0);
   // renderPagination(pageSize, currentPage);
 }
 
@@ -347,28 +361,32 @@ searchInput.addEventListener("keyup", function () {
 });
 
 // Attach event listeners to each input element
-filterInputs.forEach((input, index) => {
-  input.addEventListener("input", () => {
-    // Get the value entered in the filter input
-    const filterValue = input.value.toLowerCase();
+filterInputs.forEach(input => {
+  input.addEventListener("keyup", function () {
+    // console.log("keyup " + index)
+    const pageSize = parseInt(document.getElementById("entriesDropdown").value);
+    renderTable(pageSize, 1, 0)
 
-    // Get the index of the corresponding column
-    const columnIndex = index + 1; // Add 1 to skip the first column
+    // // Get the value entered in the filter input
+    // const filterValue = input.value.toLowerCase();
 
-    // Get all the cells in the table body of the corresponding column
-    const cells = document.querySelectorAll(
-      `tbody td:nth-child(${columnIndex})`
-    );
+    // // Get the index of the corresponding column
+    // const columnIndex = index + 1; // Add 1 to skip the first column
 
-    // Loop through each cell and hide/show based on the filter value
-    cells.forEach((cell) => {
-      const cellText = cell.textContent.toLowerCase();
-      if (cellText.includes(filterValue)) {
-        cell.parentNode.style.display = "";
-      } else {
-        cell.parentNode.style.display = "none";
-      }
-    });
+    // // Get all the cells in the table body of the corresponding column
+    // const cells = document.querySelectorAll(
+    //   `tbody td:nth-child(${columnIndex})`
+    // );
+
+    // // Loop through each cell and hide/show based on the filter value
+    // cells.forEach((cell) => {
+    //   const cellText = cell.textContent.toLowerCase();
+    //   if (cellText.includes(filterValue)) {
+    //     cell.parentNode.style.display = "";
+    //   } else {
+    //     cell.parentNode.style.display = "none";
+    //   }
+    // });
   });
 });
 
