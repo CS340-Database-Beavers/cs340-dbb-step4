@@ -201,7 +201,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
 function handleEntriesPerPageChange() {
   const pageSize = parseInt(this.value);
   const currentPage = 1;
-  // renderTable(pageSize, currentPage);
+  renderTable(pageSize, currentPage, 0);
   // renderPagination(pageSize, currentPage);
 }
 
@@ -209,7 +209,7 @@ function handleEntriesPerPageChange() {
 function handlePaginationNavigation() {
   const pageSize = parseInt(document.getElementById("entriesDropdown").value);
   const currentPage = parseInt(this.textContent);
-  // renderTable(pageSize, currentPage);
+  renderTable(pageSize, currentPage, 0);
   // renderPagination(pageSize, currentPage);
 }
 
