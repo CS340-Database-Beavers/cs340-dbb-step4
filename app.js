@@ -7,17 +7,17 @@ var express = require("express"); // We are using the express library for the we
 var exphbs = require("express-handlebars");
 var app = express(); // We need to instantiate an express object to interact with the server in our code
 PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to change in the future
-require.extensions['.sql'] = async function (module, filename) {
-  var rawSQL = fs.readFileSync(filename, 'utf8');
+require.extensions[".sql"] = async function (module, filename) {
+  var rawSQL = fs.readFileSync(filename, "utf8");
   // module.exports = rawSQL;
   // module.exports = rawSQL.replace(/\r|\n/g, '');
   // var dataArr = rawSQL.split('\n');
-  module.exports = rawSQL.split(';\n');
+  module.exports = rawSQL.split(";\n");
 };
 // Database
-var db = require("./db-connector");
-var ddl = require("./DDL.sql")
-var dml = require("./DML.sql")
+var db = require("./db-connector-humberj") || require("./db-connector");
+var ddl = require("./DDL.sql");
+var dml = require("./DML.sql");
 var employeeData = require("./json/employeeData.json");
 var roleData = require("./json/roleData.json");
 var salaryData = require("./json/salaryData.json");
@@ -39,7 +39,7 @@ app.use("/public", express.static("./public/"));
 /*
     ROUTES
 */
-async function runQueries(sqlArr) {
+async function runArrQueries(sqlArr) {
   for (var query of sqlArr) {
     console.log(query);
     if (query) {
@@ -62,7 +62,31 @@ async function runQueries(sqlArr) {
   }
 }
 
-runQueries(ddl);
+async function runSingleQueries(query) {
+  console.log(query);
+  if (query) {
+    try {
+      const results = await new Promise((resolve, reject) => {
+        db.pool.query(query, function (err, results, fields) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        });
+      });
+      console.log(results);
+      return results; // Resolve the promise with the query results
+    } catch (error) {
+      console.log(error);
+      throw error; // Re-throw the error to be caught in the calling code
+    }
+  } else {
+    throw new Error("Query is missing."); // Throw an error if query is not provided
+  }
+}
+
+runArrQueries(ddl);
 // runQueries(dml);
 
 app.get("/", function (req, res) {
@@ -70,12 +94,19 @@ app.get("/", function (req, res) {
 });
 
 app.get("/readData", function (req, res, next) {
-  try{
-    res.header("Content-Type",'application/json')
-    res.status(200).send(JSON.stringify(data[req.headers.page]));
-  } catch(err) {
+  var readQ = "SELECT * FROM " + req.headers.page;
+  runSingleQueries(readQ).then(function(returndata){
+    console.log("results " + returndata)
+  try {
+    res.header("Content-Type", "application/json");
+    res.status(200).send(JSON.stringify(returndata));
+  } catch (err) {
     res.status(500).send("Failed to read data: " + err);
   }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send("Failed to read data: " + err);
+  });
 });
 
 app.post("/addData", function (req, res, next) {
@@ -136,23 +167,29 @@ app.get("/employee*-project*", function (req, res) {
 app.get("/*employee*", function (req, res) {
   res
     .status(200)
-    .render("employee", { employeeData: employeeData, mainDirData: mainDir });
+    .render("employees", { employeeData: employeeData, mainDirData: mainDir });
 });
 
 app.get("/*project*", function (req, res) {
   res
     .status(200)
-    .render("project", { projectData: projectData, mainDirData: mainDir });
+    .render("projects", { projectData: projectData, mainDirData: mainDir });
 });
 
 app.get("/*salary", function (req, res) {
   res
     .status(200)
-    .render("salary", { salaryData: salaryData, mainDirData: mainDir });
+    .render("salaries", { salaryData: salaryData, mainDirData: mainDir });
+});
+
+app.get("/*salaries", function (req, res) {
+  res
+    .status(200)
+    .render("salaries", { salaryData: salaryData, mainDirData: mainDir });
 });
 
 app.get("/*role*", function (req, res) {
-  res.status(200).render("role", { roleData: roleData, mainDirData: mainDir });
+  res.status(200).render("roles", { roleData: roleData, mainDirData: mainDir });
 });
 
 app.get("*", function (req, res) {

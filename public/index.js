@@ -61,7 +61,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       return response.json();
     })
     .then((data) => {
-      // console.log(repsonse);
+      console.log(data);
       var rows = [];
       for (var i = 0; i < data.length; i++) {
         const row = document.createElement("tr");
