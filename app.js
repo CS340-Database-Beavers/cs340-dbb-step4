@@ -7,8 +7,17 @@ var express = require("express"); // We are using the express library for the we
 var exphbs = require("express-handlebars");
 var app = express(); // We need to instantiate an express object to interact with the server in our code
 PORT = process.env.PORT || 4221; // Set a port number at the top so it's easy to change in the future
+require.extensions['.sql'] = async function (module, filename) {
+  var rawSQL = fs.readFileSync(filename, 'utf8');
+  // module.exports = rawSQL;
+  // module.exports = rawSQL.replace(/\r|\n/g, '');
+  // var dataArr = rawSQL.split('\n');
+  module.exports = rawSQL.split(';\n');
+};
 // Database
 var db = require("./db-connector");
+var ddl = require("./DDL.sql")
+var dml = require("./DML.sql")
 var employeeData = require("./json/employeeData.json");
 var roleData = require("./json/roleData.json");
 var salaryData = require("./json/salaryData.json");
@@ -30,6 +39,32 @@ app.use("/public", express.static("./public/"));
 /*
     ROUTES
 */
+async function runQueries(sqlArr) {
+  for (var query of sqlArr) {
+    console.log(query);
+    if (query) {
+      query += ";";
+      try {
+        const results = await new Promise((resolve, reject) => {
+          db.pool.query(query, function (err, results, fields) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+        console.log(results);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+}
+
+runQueries(ddl);
+// runQueries(dml);
+
 app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
