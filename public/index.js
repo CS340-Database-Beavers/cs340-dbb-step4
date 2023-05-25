@@ -65,7 +65,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       var rows = [];
       for (var i = 0; i < data.length; i++) {
         const row = document.createElement("tr");
-        row.id = i;
+        row.id = data[i][Object.keys(data[i])[0]];
         // Add table cells
         for (var key in data[i]) {
           var newCell = document.createElement("td");
@@ -315,6 +315,7 @@ table.addEventListener("mouseover", function () {
       fetch("/editData", {
         method: "POST",
         body: JSON.stringify({
+          pageID: cell.parentNode.firstChild.className,
           index: cell.parentNode.id,
           key: cell.className,
           newString: cell.textContent,

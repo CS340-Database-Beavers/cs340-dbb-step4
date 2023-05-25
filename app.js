@@ -96,7 +96,7 @@ app.get("/", function (req, res) {
 app.get("/readData", function (req, res, next) {
   var readQ = "SELECT * FROM " + req.headers.page;
   runSingleQueries(readQ).then(function(returndata){
-    console.log("results " + returndata)
+    // console.log("results " + returndata)
   try {
     res.header("Content-Type", "application/json");
     res.status(200).send(JSON.stringify(returndata));
@@ -110,7 +110,6 @@ app.get("/readData", function (req, res, next) {
 });
 
 app.post("/addData", function (req, res, next) {
-  console.log(req.body.newData)
   var createQ = "INSERT INTO " + req.body.page + " VALUES(DEFAULT";
   for(var key in req.body.newData){
     if(key == "ID") {continue}
@@ -118,7 +117,7 @@ app.post("/addData", function (req, res, next) {
   }
   createQ += ");"
   runSingleQueries(createQ).then(function(returndata){
-    console.log("results " + returndata)
+    // console.log("results " + returndata)
   try {
     res.status(200).send("New data successfully stored.");
   } catch (err) {
@@ -147,19 +146,18 @@ app.post("/removeData", function (req, res, next) {
 });
 
 app.post("/editData", function (req, res, next) {
-  data[req.body.page][req.body.index][req.body.key] = req.body.newString;
-  var addDataPath = "./json/" + req.body.page + "Data.json";
-  fs.writeFile(
-    addDataPath,
-    JSON.stringify(data[req.body.page], null, 2),
-    function (err) {
-      if (err) {
-        res.status(500).send("Failed to update data.");
-      } else {
-        res.status(200).send("Data updated successfully deleted.");
-      }
-    }
-  );
+  var updateQ = "UPDATE " + req.body.page + " SET " + req.body.key + '=' + req.body.newString + " WHERE " + req.body.pageID + '=' + req.body.index + ';';
+  runSingleQueries(updateQ).then(function(returndata){
+    // console.log("results " + returndata)
+  try {
+    res.status(200).send("Data successfully updated.");
+  } catch (err) {
+    res.status(500).send("Failed to update data: " + err);
+  }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send("Failed to update data: " + err);
+  });
 });
 
 app.get("/employee*-project*", function (req, res) {
