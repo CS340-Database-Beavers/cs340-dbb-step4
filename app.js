@@ -41,7 +41,7 @@ app.use("/public", express.static("./public/"));
 */
 async function runArrQueries(sqlArr) {
   for (var query of sqlArr) {
-    console.log(query);
+    // console.log(query);
     if (query) {
       query += ";";
       try {
@@ -54,7 +54,7 @@ async function runArrQueries(sqlArr) {
             }
           });
         });
-        console.log(results);
+        // console.log(results);
       } catch (error) {
         console.log(error);
       }
@@ -63,7 +63,7 @@ async function runArrQueries(sqlArr) {
 }
 
 async function runSingleQueries(query) {
-  console.log(query);
+  // console.log(query);
   if (query) {
     try {
       const results = await new Promise((resolve, reject) => {
@@ -75,7 +75,7 @@ async function runSingleQueries(query) {
           }
         });
       });
-      console.log(results);
+      // console.log(results);
       return results; // Resolve the promise with the query results
     } catch (error) {
       console.log(error);
