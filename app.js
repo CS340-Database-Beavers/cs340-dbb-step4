@@ -110,19 +110,24 @@ app.get("/readData", function (req, res, next) {
 });
 
 app.post("/addData", function (req, res, next) {
-  data[req.body.page].push(req.body.newData);
-  var addDataPath = "./json/" + req.body.page + "Data.json";
-  fs.writeFile(
-    addDataPath,
-    JSON.stringify(data[req.body.page], null, 2),
-    function (err) {
-      if (err) {
-        res.status(500).send("Failed to store new data.");
-      } else {
-        res.status(200).send("New data successfully stored.");
-      }
-    }
-  );
+  console.log(req.body.newData)
+  var createQ = "INSERT INTO " + req.body.page + " VALUES(DEFAULT";
+  for(var key in req.body.newData){
+    if(key == "ID") {continue}
+    createQ += ",'" + req.body.newData[key] + "'"
+  }
+  createQ += ");"
+  runSingleQueries(createQ).then(function(returndata){
+    console.log("results " + returndata)
+  try {
+    res.status(200).send("New data successfully stored.");
+  } catch (err) {
+    res.status(500).send("Failed to store data: " + err);
+  }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send("Failed to store data: " + err);
+  });
 });
 
 app.post("/removeData", function (req, res, next) {
