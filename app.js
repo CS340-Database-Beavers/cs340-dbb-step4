@@ -130,19 +130,18 @@ app.post("/addData", function (req, res, next) {
 });
 
 app.post("/removeData", function (req, res, next) {
-  data[req.body.page].splice(parseInt(req.body.index), 1);
-  var addDataPath = "./json/" + req.body.page + "Data.json";
-  fs.writeFile(
-    addDataPath,
-    JSON.stringify(data[req.body.page], null, 2),
-    function (err) {
-      if (err) {
-        res.status(500).send("Failed to delete data point.");
-      } else {
-        res.status(200).send("Data successfully deleted.");
-      }
-    }
-  );
+  var deleteQ = "DELETE FROM " + req.body.page + " WHERE " + req.body.pageID + '=' + req.body.index + ';';
+  runSingleQueries(deleteQ).then(function(returndata){
+    // console.log("results " + returndata)
+  try {
+    res.status(200).send("Data successfully deleted.");
+  } catch (err) {
+    res.status(500).send("Failed to delete data point: " + err);
+  }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send("Failed to delete data point: " + err);
+  });
 });
 
 app.post("/editData", function (req, res, next) {

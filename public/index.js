@@ -260,6 +260,7 @@ table.addEventListener("click", function (event) {
       fetch("/removeData", {
         method: "POST",
         body: JSON.stringify({
+          pageID: event.target.parentNode.firstChild.className,
           index: event.target.parentNode.id,
           page: event.target.parentNode.parentNode.parentNode.className,
         }),
