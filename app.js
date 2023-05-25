@@ -134,11 +134,12 @@ app.get("/readData", function (req, res, next) {
 });
 
 app.post("/addData", function (req, res, next) {
-  var createQ = "INSERT INTO " + req.body.page + " VALUES(DEFAULT";
+  var createQ = "INSERT INTO " + req.body.page + " VALUES(";
   for(var key in req.body.newData){
-    if(key == "ID") {continue}
-    createQ += ",'" + req.body.newData[key] + "'"
+    if(key == "ID" || req.body.newData[key] == "DEFAULT") {createQ += "DEFAULT,"; continue;};
+    createQ += "'" + req.body.newData[key] + "',"
   }
+  createQ = createQ.slice(0,-1)
   createQ += ");"
   runSingleQueries(createQ).then(function(returndata){
     // console.log("results " + returndata)
@@ -191,9 +192,20 @@ app.get("/employee*-project*", function (req, res) {
 });
 
 app.get("/*employee*", function (req, res) {
-  res
+  var columnsQ = "SHOW COLUMNS FROM employees;";
+  runSingleQueries(columnsQ).then(function(returndata){
+    console.log("results " + returndata)
+  try {
+    res
     .status(200)
-    .render("employees", { employeeData: employeeData, mainDirData: mainDir });
+    .render("employees", { employeeData: employeeData, mainDirData: mainDir, atributeInfo: returndata });
+  } catch (err) {
+    res.status(500).send("Server failed to respond: " + err);
+  }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send("Server failed to respond: " + err);
+  });
 });
 
 app.get("/*project*", function (req, res) {

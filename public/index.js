@@ -2,6 +2,7 @@
 
 // Object definitions
 const submit = document.getElementById("submit");
+const form = document.getElementById("dataform")
 
 const table = document.getElementById("datatable");
 const headerCells = table.querySelectorAll("th");
@@ -13,37 +14,56 @@ const filterInputs = document.querySelectorAll("#input-row input");
 const filterBtn = document.getElementById("filterToggleBtn");
 const dataInfo = document.getElementById("dataInfo");
 const pagination = document.getElementById("pagination");
+
 const forminputs = document.getElementsByClassName("datainput");
 
 var tableDataLength = 0;
 // ---------Functions---------
+
+function validate(element)
+{
+  if(element.classList.contains("PRI")){
+    return {bool: true, data: "DEFAULT"}
+  }
+  if(element.classList.contains("NO") && (element.value == '' || element.value == "NULL") && !element.classList.contains("PRI")){
+    return {bool: false, err: "Field cannot be NULL"}
+  }
+  if(element.classList.contains("date")){
+    var newDate = new Date(element.value)
+    if(newDate=="Invalid Date"){
+      return {bool: false, err: "Inavlid Date"}
+    } else {
+      return {bool: true, data: newDate.toISOString()}
+    }
+  }
+  return {bool: true, data: element.value}
+}
 
 /**
  * Retrieves data from form on page
  * then passes it to the server through an POST call
  */
 function addData() {
+  const statuses = form.querySelectorAll(".error")
+    statuses.forEach(function (status) {
+        status.remove()
+    })
   var newObject = {};
   for (let i = 0; i < forminputs.length; i++) {
-    newObject[forminputs[i].id] = forminputs[i].value;
+    validateData = validate(forminputs[i]);
+    if(validateData.bool) {
+      newObject[forminputs[i].id] = validateData.data;
+    } else {
+      event.preventDefault();
+      const errorDiv = document.createElement("div")
+      errorDiv.classList.add("error", "status")
+      errorDiv.setAttribute("role", "alert")
+
+      errorDiv.innerHTML = "<h3>❌ Error: " + validateData.err + "</h3>"
+      forminputs[i].parentNode.insertBefore(errorDiv,forminputs[i].nextSibling)
+      return
+    }
   }
-//   fetch("/custQuery", {
-//     headers: {
-//       "Content-Type": "application/json",
-//       query: "SHOW COLUMNS FROM " + document.getElementById("dataform").className,
-//     },
-//   })
-//     .then((response) => {
-//       // console.log(response)
-//       if (!response.ok) {
-//         throw new Error("Network response was not OK");
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       console.log("cust q: " + data)
-  
-// });
   fetch("/addData", {
     method: "POST",
     body: JSON.stringify({
