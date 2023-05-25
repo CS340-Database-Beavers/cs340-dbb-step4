@@ -1,7 +1,7 @@
 [
   {
     "ID": 1,
-    "Hiredate": "now",
+    "Hiredate": "nowish",
     "Name": "Tommy Wiseo",
     "Role": "new_name",
     "Active": "true",
@@ -30,7 +30,7 @@
     "ID": "4",
     "Hiredate": "",
     "Name": "test",
-    "Role": "work?",
+    "Role": "works",
     "Active": "",
     "Address": "",
     "Birthdate": ""
