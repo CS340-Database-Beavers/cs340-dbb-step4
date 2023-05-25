@@ -12,7 +12,7 @@ require.extensions[".sql"] = async function (module, filename) {
   // module.exports = rawSQL;
   // module.exports = rawSQL.replace(/\r|\n/g, '');
   // var dataArr = rawSQL.split('\n');
-  module.exports = rawSQL.split(";\n");
+  module.exports = rawSQL.split(";\r\n");
 };
 // Database
 var db = require("./db-connector-humberj") || require("./db-connector");
@@ -88,9 +88,33 @@ async function runSingleQueries(query) {
 
 runArrQueries(ddl);
 // runQueries(dml);
-
+runSingleQueries("SHOW COLUMNS FROM employees").then(function(returndata){
+  try {
+    console.log(returndata)
+  } catch (err) {
+    console.log(err);
+  }
+  }).catch((err) => {
+    console.log(err);
+  });
 app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
+});
+
+app.get("/custQuery", function(req, res, next){
+  var custQ = req.headers.query;
+  runSingleQueries(custQ).then(function(returndata){
+    // console.log("results " + returndata)
+  try {
+    res.header("Content-Type", "application/json");
+    res.status(200).send(JSON.stringify(returndata));
+  } catch (err) {
+    res.status(500).send("Failed to read data: " + err);
+  }
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send("Failed to read data: " + err);
+  });
 });
 
 app.get("/readData", function (req, res, next) {

@@ -27,6 +27,23 @@ function addData() {
   for (let i = 0; i < forminputs.length; i++) {
     newObject[forminputs[i].id] = forminputs[i].value;
   }
+//   fetch("/custQuery", {
+//     headers: {
+//       "Content-Type": "application/json",
+//       query: "SHOW COLUMNS FROM " + document.getElementById("dataform").className,
+//     },
+//   })
+//     .then((response) => {
+//       // console.log(response)
+//       if (!response.ok) {
+//         throw new Error("Network response was not OK");
+//       }
+//       return response.json();
+//     })
+//     .then((data) => {
+//       console.log("cust q: " + data)
+  
+// });
   fetch("/addData", {
     method: "POST",
     body: JSON.stringify({
