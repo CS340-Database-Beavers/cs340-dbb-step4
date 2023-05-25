@@ -88,146 +88,269 @@ async function runSingleQueries(query) {
 
 runArrQueries(ddl);
 // runQueries(dml);
-runSingleQueries("SHOW COLUMNS FROM employees").then(function(returndata){
-  try {
-    console.log(returndata)
-  } catch (err) {
-    console.log(err);
-  }
-  }).catch((err) => {
+runSingleQueries("SHOW COLUMNS FROM employees")
+  .then(function (returndata) {
+    try {
+      console.log(returndata);
+    } catch (err) {
+      console.log(err);
+    }
+  })
+  .catch((err) => {
     console.log(err);
   });
 app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
 
-app.get("/custQuery", function(req, res, next){
+app.get("/custQuery", function (req, res, next) {
   var custQ = req.headers.query;
-  runSingleQueries(custQ).then(function(returndata){
-    // console.log("results " + returndata)
-  try {
-    res.header("Content-Type", "application/json");
-    res.status(200).send(JSON.stringify(returndata));
-  } catch (err) {
-    res.status(500).send("Failed to read data: " + err);
-  }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send("Failed to read data: " + err);
-  });
+  runSingleQueries(custQ)
+    .then(function (returndata) {
+      // console.log("results " + returndata)
+      try {
+        res.header("Content-Type", "application/json");
+        res.status(200).send(JSON.stringify(returndata));
+      } catch (err) {
+        res.status(500).send("Failed to read data: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Failed to read data: " + err);
+    });
 });
 
 app.get("/readData", function (req, res, next) {
   var readQ = "SELECT * FROM " + req.headers.page;
-  runSingleQueries(readQ).then(function(returndata){
-    // console.log("results " + returndata)
-  try {
-    res.header("Content-Type", "application/json");
-    res.status(200).send(JSON.stringify(returndata));
-  } catch (err) {
-    res.status(500).send("Failed to read data: " + err);
-  }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send("Failed to read data: " + err);
-  });
+  runSingleQueries(readQ)
+    .then(function (returndata) {
+      // console.log("results " + returndata)
+      try {
+        res.header("Content-Type", "application/json");
+        res.status(200).send(JSON.stringify(returndata));
+      } catch (err) {
+        res.status(500).send("Failed to read data: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Failed to read data: " + err);
+    });
 });
 
 app.post("/addData", function (req, res, next) {
   var createQ = "INSERT INTO " + req.body.page + " VALUES(";
-  for(var key in req.body.newData){
-    if(key == "ID" || req.body.newData[key] == "DEFAULT") {createQ += "DEFAULT,"; continue;};
-    createQ += "'" + req.body.newData[key] + "',"
+  for (var key in req.body.newData) {
+    if (key == "ID" || req.body.newData[key] == "DEFAULT") {
+      createQ += "DEFAULT,";
+      continue;
+    }
+    createQ += "'" + req.body.newData[key] + "',";
   }
-  createQ = createQ.slice(0,-1)
-  createQ += ");"
-  runSingleQueries(createQ).then(function(returndata){
-    // console.log("results " + returndata)
-  try {
-    res.status(200).send("New data successfully stored.");
-  } catch (err) {
-    res.status(500).send("Failed to store data: " + err);
-  }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send("Failed to store data: " + err);
-  });
+  createQ = createQ.slice(0, -1);
+  createQ += ");";
+  runSingleQueries(createQ)
+    .then(function (returndata) {
+      // console.log("results " + returndata)
+      try {
+        res.status(200).send("New data successfully stored.");
+      } catch (err) {
+        res.status(500).send("Failed to store data: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Failed to store data: " + err);
+    });
 });
 
 app.post("/removeData", function (req, res, next) {
-  var deleteQ = "DELETE FROM " + req.body.page + " WHERE " + req.body.pageID + '=' + req.body.index + ';';
-  runSingleQueries(deleteQ).then(function(returndata){
-    // console.log("results " + returndata)
-  try {
-    res.status(200).send("Data successfully deleted.");
-  } catch (err) {
-    res.status(500).send("Failed to delete data point: " + err);
-  }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send("Failed to delete data point: " + err);
-  });
+  var deleteQ =
+    "DELETE FROM " +
+    req.body.page +
+    " WHERE " +
+    req.body.pageID +
+    "=" +
+    req.body.index +
+    ";";
+  runSingleQueries(deleteQ)
+    .then(function (returndata) {
+      // console.log("results " + returndata)
+      try {
+        res.status(200).send("Data successfully deleted.");
+      } catch (err) {
+        res.status(500).send("Failed to delete data point: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Failed to delete data point: " + err);
+    });
 });
 
 app.post("/editData", function (req, res, next) {
-  var updateQ = "UPDATE " + req.body.page + " SET " + req.body.key + '=' + req.body.newString + " WHERE " + req.body.pageID + '=' + req.body.index + ';';
-  runSingleQueries(updateQ).then(function(returndata){
-    // console.log("results " + returndata)
-  try {
-    res.status(200).send("Data successfully updated.");
-  } catch (err) {
-    res.status(500).send("Failed to update data: " + err);
-  }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send("Failed to update data: " + err);
-  });
+  var updateQ =
+    "UPDATE " +
+    req.body.page +
+    " SET " +
+    req.body.key +
+    "=" +
+    req.body.newString +
+    " WHERE " +
+    req.body.pageID +
+    "=" +
+    req.body.index +
+    ";";
+  runSingleQueries(updateQ)
+    .then(function (returndata) {
+      // console.log("results " + returndata)
+      try {
+        res.status(200).send("Data successfully updated.");
+      } catch (err) {
+        res.status(500).send("Failed to update data: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Failed to update data: " + err);
+    });
 });
 
 app.get("/employee*-project*", function (req, res) {
-  res.status(200).render("employeesProjects", {
-    employeesProjectsData: employeesProjectsData,
-    mainDirData: mainDir,
-  });
+  var columnsQ = "SHOW COLUMNS FROM employees_projects;";
+  runSingleQueries(columnsQ)
+    .then(function (returndata) {
+      console.log("results " + returndata);
+      try {
+        res.status(200).render("employeesProjects", {
+          employeesProjectsData: employeesProjectsData,
+          mainDirData: mainDir,
+          atributeInfo: returndata,
+        });
+      } catch (err) {
+        res.status(500).send("Server failed to respond: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server failed to respond: " + err);
+    });
 });
 
 app.get("/*employee*", function (req, res) {
   var columnsQ = "SHOW COLUMNS FROM employees;";
-  runSingleQueries(columnsQ).then(function(returndata){
-    console.log("results " + returndata)
-  try {
-    res
-    .status(200)
-    .render("employees", { employeeData: employeeData, mainDirData: mainDir, atributeInfo: returndata });
-  } catch (err) {
-    res.status(500).send("Server failed to respond: " + err);
-  }
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send("Server failed to respond: " + err);
-  });
+  runSingleQueries(columnsQ)
+    .then(function (returndata) {
+      console.log("results " + returndata);
+      try {
+        res
+          .status(200)
+          .render("employees", {
+            employeeData: employeeData,
+            mainDirData: mainDir,
+            atributeInfo: returndata,
+          });
+      } catch (err) {
+        res.status(500).send("Server failed to respond: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server failed to respond: " + err);
+    });
 });
 
 app.get("/*project*", function (req, res) {
-  res
-    .status(200)
-    .render("projects", { projectData: projectData, mainDirData: mainDir });
+  var columnsQ = "SHOW COLUMNS FROM projects;";
+  runSingleQueries(columnsQ)
+    .then(function (returndata) {
+      console.log("results " + returndata);
+      try {
+        res
+          .status(200)
+          .render("projects", {
+            projectData: projectData,
+            mainDirData: mainDir,
+            atributeInfo: returndata,
+          });
+      } catch (err) {
+        res.status(500).send("Server failed to respond: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server failed to respond: " + err);
+    });
 });
 
 app.get("/*salary", function (req, res) {
-  res
-    .status(200)
-    .render("salaries", { salaryData: salaryData, mainDirData: mainDir });
+  var columnsQ = "SHOW COLUMNS FROM salaries;";
+  runSingleQueries(columnsQ)
+    .then(function (returndata) {
+      console.log("results " + returndata);
+      try {
+        res
+          .status(200)
+          .render("salaries", {
+            salaryData: salaryData,
+            mainDirData: mainDir,
+            atributeInfo: returndata,
+          });
+      } catch (err) {
+        res.status(500).send("Server failed to respond: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server failed to respond: " + err);
+    });
 });
 
 app.get("/*salaries", function (req, res) {
-  res
-    .status(200)
-    .render("salaries", { salaryData: salaryData, mainDirData: mainDir });
+  var columnsQ = "SHOW COLUMNS FROM salaries;";
+  runSingleQueries(columnsQ)
+    .then(function (returndata) {
+      console.log("results " + returndata);
+      try {
+        res
+          .status(200)
+          .render("salaries", {
+            salaryData: salaryData,
+            mainDirData: mainDir,
+            atributeInfo: returndata,
+          });
+      } catch (err) {
+        res.status(500).send("Server failed to respond: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server failed to respond: " + err);
+    });
 });
 
 app.get("/*role*", function (req, res) {
-  res.status(200).render("roles", { roleData: roleData, mainDirData: mainDir });
+  var columnsQ = "SHOW COLUMNS FROM roles;";
+  runSingleQueries(columnsQ)
+    .then(function (returndata) {
+      console.log("results " + returndata);
+      try {
+        res
+          .status(200)
+          .render("roles", {
+            roleData: roleData,
+            mainDirData: mainDir,
+            atributeInfo: returndata,
+          });
+      } catch (err) {
+        res.status(500).send("Server failed to respond: " + err);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server failed to respond: " + err);
+    });
 });
 
 app.get("*", function (req, res) {
