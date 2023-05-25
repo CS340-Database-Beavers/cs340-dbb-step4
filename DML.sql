@@ -1,5 +1,17 @@
 -- all variable names are surrounded by two percents (eg, %%var_name%%)
 
+---------------- Triggers to double check data integrity ---------------
+-- CREATE TRIGGER role_insert_check
+-- BEFORE INSERT ON roles
+-- FOR EACH ROW 
+-- BEGIN
+--   IF NEW.role_id NOT RLIKE "^[0-9]+$" 
+--   OR NEW.role_name NOT RLIKE "^[a-Z]+$"
+--   THEN
+--     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid role entry'
+--   END IF;
+-- END;
+
 -------------------------- Role Table Queries --------------------------
 -- Viewing the table as a whole
 SELECT * FROM roles;
@@ -72,14 +84,14 @@ DEFAULT,
 -- refer back to them in the future for any reason
 -- NO DELETE
 
--- We should, however, mark employees as "unactive" if they leave the
+-- We should, however, mark employees as "inactive" if they leave the
 -- company
 UPDATE employees SET is_active=0 
 WHERE employee_id=%%employee_id%%;
 
 -- or as active if they re-join the company
 UPDATE employees SET is_active=1 
-WHERE %%employee_id%%=3;
+WHERE employee_id=%%employee_id%%;
 
 -- We should also allow our admin to modify the other aspects of an employee's data
 UPDATE employees SET 
@@ -216,3 +228,10 @@ AND date_of_work=%%target_day_of_work%%;
 DELETE FROM employees_projects
 WHERE employee_id=%%bad_employee%% 
 AND date_of_work=%%target_day_of_work%%;
+
+
+
+
+-- SELECT * 
+-- FROM roles as r
+-- WHERE r.role_id RLIKE '^[0-9]+$';
