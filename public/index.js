@@ -21,7 +21,7 @@ var tableDataLength = 0;
 // ---------Functions---------
 
 function validate(element) {
-  console.log(element.value)
+  console.log(element.value);
   if (
     element.classList.contains("PRI") ||
     (element.classList.contains("YES") &&
@@ -30,7 +30,12 @@ function validate(element) {
     return { bool: true, data: "DEFAULT" };
   }
   if (element.classList.contains("date")) {
-    var newDate = element.value === undefined ? new Date(element.innerText) : (element.value == "" ? new Date() : new Date(element.value));
+    var newDate =
+      element.value === undefined
+        ? new Date(element.innerText)
+        : element.value == ""
+        ? new Date()
+        : new Date(element.value);
     if (newDate == "Invalid Date") {
       return { bool: false, err: "Inavlid Date" };
     } else {
@@ -337,18 +342,58 @@ table.addEventListener("click", function (event) {
     if (table.rows.length <= 2) {
       alert("You must have at least one row in the table");
     } else {
-      fetch("/removeData", {
-        method: "POST",
-        body: JSON.stringify({
-          pageID: event.target.parentNode.firstChild.className,
-          index: event.target.parentNode.id,
-          page: event.target.parentNode.parentNode.parentNode.className,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      table.deleteRow(parseInt(event.target.parentNode.id) + 1);
+      if (
+        event.target.parentNode.parentNode.parentNode.className == "employees"
+      ) {
+        const terminate = confirm(
+          "Are you sure you want to mark " +
+            event.target.parentNode.querySelector("td[headers='name']")
+              .innerText +
+            " as inactive?"
+        );
+        if (terminate) {
+          fetch("/editData", {
+            method: "POST",
+            body: JSON.stringify({
+              pageID:
+                event.target.parentNode.firstChild.getAttribute("headers"),
+              index: event.target.parentNode.id,
+              page: event.target.parentNode.parentNode.parentNode.className,
+              key: "is_active",
+              newString: "0",
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((response) => {
+            const pageSize = parseInt(
+              document.getElementById("entriesDropdown").value
+            );
+            renderTable(pageSize, 1, 0);
+          });
+        }
+        return;
+      }
+      const deleteRow = confirm(
+        "Are you sure you want to mark " +
+          event.target.parentNode.querySelector("td[headers='name']")
+            .innerText +
+          " as inactive?"
+      );
+      if (deleteRow) {
+        fetch("/removeData", {
+          method: "POST",
+          body: JSON.stringify({
+            pageID: event.target.parentNode.firstChild.getAttribute("headers"),
+            index: event.target.parentNode.id,
+            page: event.target.parentNode.parentNode.parentNode.className,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        table.deleteRow(parseInt(event.target.parentNode.id) + 1);
+      }
     }
   }
 });
