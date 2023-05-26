@@ -2,7 +2,7 @@
 
 // Object definitions
 const submit = document.getElementById("submit");
-const form = document.getElementById("dataform")
+const form = document.getElementById("dataform");
 
 const table = document.getElementById("datatable");
 const headerCells = table.querySelectorAll("th");
@@ -20,23 +20,31 @@ const forminputs = document.getElementsByClassName("datainput");
 var tableDataLength = 0;
 // ---------Functions---------
 
-function validate(element)
-{
-  if(element.classList.contains("PRI")){
-    return {bool: true, data: "DEFAULT"}
+function validate(element) {
+  if (
+    element.classList.contains("PRI") ||
+    (element.classList.contains("YES") &&
+      (element.value == "" || element.value == "NULL"))
+  ) {
+    return { bool: true, data: "DEFAULT" };
   }
-  if(element.classList.contains("NO") && (element.value == '' || element.value == "NULL") && !element.classList.contains("PRI")){
-    return {bool: false, err: "Field cannot be NULL"}
-  }
-  if(element.classList.contains("date")){
-    var newDate = new Date(element.value)
-    if(newDate=="Invalid Date"){
-      return {bool: false, err: "Inavlid Date"}
+  if (element.classList.contains("date")) {
+    var newDate = element.value == "" ? new Date() : new Date(element.value);
+    if (newDate == "Invalid Date") {
+      return { bool: false, err: "Inavlid Date" };
     } else {
-      return {bool: true, data: newDate.toISOString()}
+      return { bool: true, data: newDate.toISOString() };
     }
   }
-  return {bool: true, data: element.value}
+  if (
+    element.classList.contains("NO") &&
+    (element.value == "" || element.value == "NULL") &&
+    !element.classList.contains("PRI")
+  ) {
+    return { bool: false, err: "Field cannot be NULL" };
+  }
+
+  return { bool: true, data: element.value };
 }
 
 /**
@@ -44,24 +52,27 @@ function validate(element)
  * then passes it to the server through an POST call
  */
 function addData() {
-  const statuses = form.querySelectorAll(".error")
-    statuses.forEach(function (status) {
-        status.remove()
-    })
+  event.preventDefault();
+  const statuses = form.querySelectorAll(".error");
+  statuses.forEach(function (status) {
+    status.remove();
+  });
   var newObject = {};
   for (let i = 0; i < forminputs.length; i++) {
     validateData = validate(forminputs[i]);
-    if(validateData.bool) {
+    if (validateData.bool) {
       newObject[forminputs[i].id] = validateData.data;
     } else {
-      event.preventDefault();
-      const errorDiv = document.createElement("div")
-      errorDiv.classList.add("error", "status")
-      errorDiv.setAttribute("role", "alert")
+      const errorDiv = document.createElement("div");
+      errorDiv.classList.add("error", "status");
+      errorDiv.setAttribute("role", "alert");
 
-      errorDiv.innerHTML = "<h3>❌ Error: " + validateData.err + "</h3>"
-      forminputs[i].parentNode.insertBefore(errorDiv,forminputs[i].nextSibling)
-      return
+      errorDiv.innerHTML = "<h3>❌ Error: " + validateData.err + "</h3>";
+      forminputs[i].parentNode.insertBefore(
+        errorDiv,
+        forminputs[i].nextSibling
+      );
+      return;
     }
   }
   fetch("/addData", {
@@ -73,7 +84,28 @@ function addData() {
     headers: {
       "Content-Type": "application/json",
     },
-  });
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((error) => {
+          throw new Error(error);
+        });
+      }
+
+      form.reset();
+      const pageSize = parseInt(
+        document.getElementById("entriesDropdown").value
+      );
+      renderTable(pageSize, 1, 0);
+    })
+    .catch((error) => {
+      const errorDiv = document.createElement("div");
+      errorDiv.classList.add("error", "status");
+      errorDiv.setAttribute("role", "alert");
+
+      errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+      form.appendChild(errorDiv);
+    });
 }
 
 /**
@@ -141,7 +173,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       rows.sort(sortFn);
 
       const filter = searchInput.value.toUpperCase();
-      rowsToFilter = []
+      rowsToFilter = [];
       for (let i = 0; i < rows.length; i++) {
         let rowVisible = false;
         const cells = rows[i].childNodes;
@@ -149,19 +181,26 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
         for (let j = 0; j < cells.length; j++) {
           const cell = cells[j];
           const cellValue = cell.textContent || cell.innerText;
-          if(filterInputs[j]){
+          if (filterInputs[j]) {
             var colFilter = filterInputs[j].value.toUpperCase();
           } else {
-            var colFilter = '';
+            var colFilter = "";
           }
           // console.log(filterInputs[j].value.toUpperCase())
-          
+
           // if (cellValue.toUpperCase().indexOf(filter) > -1) {
           //   rowVisible = true;
           //   break;
           // }
           // const filterInputs = document.querySelectorAll("#input-row input");
-          console.log("row " + i + ' ' + cellValue.toUpperCase().indexOf(filter) + " and " + cellValue.toUpperCase().indexOf(colFilter))
+          console.log(
+            "row " +
+              i +
+              " " +
+              cellValue.toUpperCase().indexOf(filter) +
+              " and " +
+              cellValue.toUpperCase().indexOf(colFilter)
+          );
           // console.log("col " + j + " filter " + colFilter)
           if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
             rowVisible = false;
@@ -172,11 +211,11 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
         }
 
         if (!rowVisible) {
-          rowsToFilter.unshift(i)
+          rowsToFilter.unshift(i);
         }
       }
-      for (var i = 0; i < rowsToFilter.length; i++){
-        console.log("Filtering row: " + rowsToFilter[i])
+      for (var i = 0; i < rowsToFilter.length; i++) {
+        console.log("Filtering row: " + rowsToFilter[i]);
         rows.splice(rowsToFilter[i], 1);
       }
 
@@ -378,7 +417,7 @@ searchInput.addEventListener("keyup", function () {
   //   }
   // });
   const pageSize = parseInt(document.getElementById("entriesDropdown").value);
-  renderTable(pageSize, 1, 0)
+  renderTable(pageSize, 1, 0);
   // const filter = searchInput.value.toUpperCase();
 
   // for (let i = 0; i < rows.length; i++) {
@@ -400,11 +439,11 @@ searchInput.addEventListener("keyup", function () {
 });
 
 // Attach event listeners to each input element
-filterInputs.forEach(input => {
+filterInputs.forEach((input) => {
   input.addEventListener("keyup", function () {
     // console.log("keyup " + index)
     const pageSize = parseInt(document.getElementById("entriesDropdown").value);
-    renderTable(pageSize, 1, 0)
+    renderTable(pageSize, 1, 0);
 
     // // Get the value entered in the filter input
     // const filterValue = input.value.toLowerCase();

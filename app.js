@@ -152,16 +152,10 @@ app.post("/addData", function (req, res, next) {
   createQ += ");";
   runSingleQueries(createQ)
     .then(function (returndata) {
-      // console.log("results " + returndata)
-      try {
-        res.status(200).send("New data successfully stored.");
-      } catch (err) {
-        res.status(500).send("Failed to store data: " + err);
-      }
+      res.status(200).send("New data successfully stored.");
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).send("Failed to store data: " + err);
+      next(err); // Pass the error to the error-handling middleware
     });
 });
 
@@ -355,6 +349,14 @@ app.get("/*role*", function (req, res) {
 
 app.get("*", function (req, res) {
   res.status(404).render("404", { mainDirData: mainDir });
+});
+
+// Error-handling middleware
+app.use(function (err, req, res, next) {
+  console.error(err); // Log the error for debugging purposes
+
+  // Send the error message to the client
+  res.status(500).send("Failed to store data: " + err.message);
 });
 
 app.listen(PORT, function (err) {
