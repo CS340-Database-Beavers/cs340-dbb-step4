@@ -71,19 +71,24 @@
   <thead>
     <tr>
       {{#each tableData}}
-        {{!-- <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey Field ../fkInfo}}">{{lookup ../headerNames [Field]}}</th> --}}
-        <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th>
-        {{!-- {{#if (ifEquals Field ../fkInfo)}}
-          {{#with (getTableFromFK Field ../fkInfo)}}
-            <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey Field ../fkInfo}}">{{lookup ../headerNames [Field]}}</th>
+        <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey [Field] ../fkInfo}}">{{lookup ../headerNames [Field]}}</th>
+        {{!-- <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th> --}}
+        {{#if (ifEquals Field ../fkInfo)}}
+          {{#with (lookup ../fkTable [Field])}}
+            <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{Field}}</th>
           {{/with}}
-        {{/if}} --}}
+        {{/if}}
       {{/each}}
       <th>Remove</th>
     </tr>
     <tr id="input-row" class="d-hidden">
       {{#each tableData}}
         <td headers={{Field}}> <input type="text" /> </td>
+        {{#if (ifEquals Field ../fkInfo)}}
+          {{#with (lookup ../fkTable [Field])}}
+            <td headers={{Field}}> <input type="text" /> </td>
+          {{/with}}
+        {{/if}}
       {{/each}}
       <td></td>
     </tr>

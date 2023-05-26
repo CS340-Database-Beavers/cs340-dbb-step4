@@ -21,7 +21,7 @@ var tableDataLength = 0;
 // ---------Functions---------
 
 function validate(element) {
-  console.log(element.value);
+  // console.log(element.value);
   if (
     (element.classList.contains("PRI") &&
       (element.value == "" || element.value == "NULL")) ||
@@ -140,7 +140,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       var rows = [];
       for (var i = 0; i < data.length; i++) {
         const row = document.createElement("tr");
@@ -154,6 +154,11 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
             newCell.classList.add(attribute);
           });
           row.appendChild(newCell);
+          if(document.getElementById(key).classList.contains("FK")){
+            var fkCell = document.createElement("td");
+            fkCell.textContent = "tbd";
+            row.appendChild(fkCell);
+          }
         }
 
         const removeCell = document.createElement("td");
@@ -163,6 +168,7 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
         row.appendChild(removeCell);
 
         rows[i] = row;
+        // console.log(row);
       }
 
       // const sortFn = (a, b) => {
@@ -206,14 +212,14 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
           //   break;
           // }
           // const filterInputs = document.querySelectorAll("#input-row input");
-          console.log(
-            "row " +
-              i +
-              " " +
-              cellValue.toUpperCase().indexOf(filter) +
-              " and " +
-              cellValue.toUpperCase().indexOf(colFilter)
-          );
+          // console.log(
+          //   "row " +
+          //     i +
+          //     " " +
+          //     cellValue.toUpperCase().indexOf(filter) +
+          //     " and " +
+          //     cellValue.toUpperCase().indexOf(colFilter)
+          // );
           // console.log("col " + j + " filter " + colFilter)
           if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
             rowVisible = false;
@@ -631,6 +637,7 @@ function resizeTable() {
     // Iterate over each row in the column
     for (var j = 0; j < tablerows.length; j++) {
       var cell = tablerows[j].cells[i];
+      // console.log(cell)
       var cellWidth = cell.offsetWidth;
 
       // Check if the cell contains an input field

@@ -15,7 +15,8 @@ require.extensions[".sql"] = async function (module, filename) {
   module.exports = rawSQL.split(";\r\n");
 };
 // Database
-var db = require("./db-connector-humberj") || require("./db-connector");
+// var db = require("./db-connector");
+var db = require("./db-connector-humberj");
 var ddl = require("./DDL.sql");
 var dml = require("./DML.sql");
 var employeeData = require("./json/employeeData.json");
@@ -106,39 +107,33 @@ async function runSingleQueries(query) {
 }
 
 async function getTableFromFK(fkInfo) {
-  var retVal = []
-  fkInfo.forEach((fk) => {
-    var columnsQ = "SHOW COLUMNS FROM " + fk.REFERENCED_TABLE_NAME + ";";
-    runSingleQueries(columnsQ)
-      .then(function (returndata) {
-        // console.log("results " + returndata);
-        try {
-          // console.log("results " + returndata.find(column => column.Field.includes('name')).Field);
-          return returndata.find((column) => column.Field.includes("name"));
-        } catch (err) {
-          console.log(err);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
+  var retVal = {};
+  for (var i = 0; i < fkInfo.length; i++) {
+    var columnsQ = "SHOW COLUMNS FROM " + fkInfo[i].REFERENCED_TABLE_NAME + ";";
+    try {
+      const results = await new Promise((resolve, reject) => {
+        db.pool.query(columnsQ, function (err, results, fields) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
+        });
       });
-  });
+      // console.log(results);
+      retVal[fkInfo[i].COLUMN_NAME] = results.find((column) =>
+        column.Field.includes("name")
+      ); // Resolve the promise with the query results
+    } catch (error) {
+      console.log(error);
+      throw error; // Re-throw the error to be caught in the calling code
+    }
+  }
   return retVal;
 }
 
 runArrQueries(ddl);
 // runQueries(dml);
-runSingleQueries("SHOW COLUMNS FROM employees")
-  .then(function (returndata) {
-    try {
-      console.log(returndata);
-    } catch (err) {
-      console.log(err);
-    }
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 app.get("/", function (req, res) {
   res.status(200).render("mainPage", { mainDirData: mainDir });
 });
@@ -147,7 +142,7 @@ app.get("/custQuery", function (req, res, next) {
   var custQ = req.headers.query;
   runSingleQueries(custQ)
     .then(function (returndata) {
-      console.log("results " + returndata);
+      // console.log("results " + returndata);
       try {
         res.header("Content-Type", "application/json");
         res.status(200).send(JSON.stringify(returndata));
@@ -180,7 +175,7 @@ app.get("/readData", function (req, res, next) {
 });
 
 app.post("/addData", function (req, res, next) {
-  console.log(req.body.newData)
+  console.log(req.body.newData);
   var createQ = "INSERT INTO " + req.body.page + " VALUES(";
   for (var key in req.body.newData) {
     if (key == "ID" || req.body.newData[key] == "DEFAULT") {
@@ -254,15 +249,43 @@ app.post("/editData", function (req, res, next) {
 
 app.get("/employee*-project*", function (req, res) {
   var columnsQ = "SHOW COLUMNS FROM employees_projects;";
+  var fkQ =
+    "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = 'employees_projects' AND CONSTRAINT_NAME <> 'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL;";
   runSingleQueries(columnsQ)
     .then(function (returndata) {
-      console.log("results " + returndata);
+      // console.log("results " + returndata);
       try {
-        res.status(200).render("employeesProjects", {
-          employeesProjectsData: employeesProjectsData,
-          mainDirData: mainDir,
-          atributeInfo: returndata,
-        });
+        runSingleQueries(fkQ)
+          .then(function (fks) {
+            // console.log("results " + fks);
+            try {
+              getTableFromFK(fks)
+                .then(function (table) {
+                  console.log("results " + table);
+                  try {
+                    res.status(200).render("employeesProjects", {
+                      employeesProjectsData: employeesProjectsData,
+                      mainDirData: mainDir,
+                      atributeInfo: returndata,
+                      fkInfo: fks,
+                      fkTable: table,
+                    });
+                  } catch (err) {
+                    res.status(500).send("Server failed to respond: " + err);
+                  }
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).send("Server failed to respond: " + err);
+                });
+            } catch (err) {
+              res.status(500).send("Server failed to respond: " + err);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send("Server failed to respond: " + err);
+          });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
@@ -283,7 +306,7 @@ app.get("/*employee*", function (req, res) {
       try {
         runSingleQueries(fkQ)
           .then(function (fks) {
-            // console.log("results " + returndata);
+            // console.log("results " + fks);
             try {
               getTableFromFK(fks)
                 .then(function (table) {
@@ -294,6 +317,7 @@ app.get("/*employee*", function (req, res) {
                       mainDirData: mainDir,
                       atributeInfo: returndata,
                       fkInfo: fks,
+                      fkTable: table,
                     });
                   } catch (err) {
                     res.status(500).send("Server failed to respond: " + err);
@@ -344,15 +368,43 @@ app.get("/*project*", function (req, res) {
 
 app.get("/*salary", function (req, res) {
   var columnsQ = "SHOW COLUMNS FROM salaries;";
+  var fkQ =
+    "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = 'salaries' AND CONSTRAINT_NAME <> 'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL;";
   runSingleQueries(columnsQ)
     .then(function (returndata) {
       console.log("results " + returndata);
       try {
-        res.status(200).render("salaries", {
-          salaryData: salaryData,
-          mainDirData: mainDir,
-          atributeInfo: returndata,
-        });
+        runSingleQueries(fkQ)
+          .then(function (fks) {
+            // console.log("results " + fks);
+            try {
+              getTableFromFK(fks)
+                .then(function (table) {
+                  console.log("results " + table);
+                  try {
+                    res.status(200).render("salaries", {
+                      salaryData: salaryData,
+                      mainDirData: mainDir,
+                      atributeInfo: returndata,
+                      fkInfo: fks,
+                      fkTable: table,
+                    });
+                  } catch (err) {
+                    res.status(500).send("Server failed to respond: " + err);
+                  }
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).send("Server failed to respond: " + err);
+                });
+            } catch (err) {
+              res.status(500).send("Server failed to respond: " + err);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send("Server failed to respond: " + err);
+          });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
@@ -365,15 +417,43 @@ app.get("/*salary", function (req, res) {
 
 app.get("/*salaries", function (req, res) {
   var columnsQ = "SHOW COLUMNS FROM salaries;";
+  var fkQ =
+    "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = 'salaries' AND CONSTRAINT_NAME <> 'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL;";
   runSingleQueries(columnsQ)
     .then(function (returndata) {
       console.log("results " + returndata);
       try {
-        res.status(200).render("salaries", {
-          salaryData: salaryData,
-          mainDirData: mainDir,
-          atributeInfo: returndata,
-        });
+        runSingleQueries(fkQ)
+          .then(function (fks) {
+            // console.log("results " + fks);
+            try {
+              getTableFromFK(fks)
+                .then(function (table) {
+                  console.log("results " + table);
+                  try {
+                    res.status(200).render("salaries", {
+                      salaryData: salaryData,
+                      mainDirData: mainDir,
+                      atributeInfo: returndata,
+                      fkInfo: fks,
+                      fkTable: table,
+                    });
+                  } catch (err) {
+                    res.status(500).send("Server failed to respond: " + err);
+                  }
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).send("Server failed to respond: " + err);
+                });
+            } catch (err) {
+              res.status(500).send("Server failed to respond: " + err);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send("Server failed to respond: " + err);
+          });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
