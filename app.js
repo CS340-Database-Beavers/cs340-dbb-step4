@@ -180,6 +180,7 @@ app.get("/readData", function (req, res, next) {
 });
 
 app.post("/addData", function (req, res, next) {
+  console.log(req.body.newData)
   var createQ = "INSERT INTO " + req.body.page + " VALUES(";
   for (var key in req.body.newData) {
     if (key == "ID" || req.body.newData[key] == "DEFAULT") {
@@ -203,7 +204,7 @@ app.post("/removeData", function (req, res, next) {
   var deleteQ =
     "DELETE FROM " +
     req.body.page +
-    " WHERE '" +
+    " WHERE " +
     req.body.pageID +
     "=" +
     req.body.index +

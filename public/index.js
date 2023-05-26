@@ -23,7 +23,8 @@ var tableDataLength = 0;
 function validate(element) {
   console.log(element.value);
   if (
-    element.classList.contains("PRI") ||
+    (element.classList.contains("PRI") &&
+      (element.value == "" || element.value == "NULL")) ||
     (element.classList.contains("YES") &&
       (element.value == "" || element.value == "NULL"))
   ) {
@@ -50,7 +51,10 @@ function validate(element) {
     return { bool: false, err: "Field cannot be NULL" };
   }
 
-  return { bool: true, data: element.value };
+  return {
+    bool: true,
+    data: element.value === undefined ? element.innerText : element.value,
+  };
 }
 
 /**
@@ -67,7 +71,7 @@ function addData() {
   for (let i = 0; i < forminputs.length; i++) {
     validateData = validate(forminputs[i]);
     if (validateData.bool) {
-      newObject[forminputs[i].id] = validateData.data;
+      newObject[forminputs[i].getAttribute("name")] = validateData.data;
     } else {
       const errorDiv = document.createElement("div");
       errorDiv.classList.add("error", "status");
