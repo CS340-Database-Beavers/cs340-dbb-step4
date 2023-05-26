@@ -71,7 +71,7 @@
   <thead>
     <tr>
       {{#each tableData}}
-        <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{Field}}</th>
+        <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th>
       {{/each}}
       <th>Remove</th>
     </tr>

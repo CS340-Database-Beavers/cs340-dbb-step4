@@ -1,7 +1,7 @@
 <form class={{page}} id="dataform">
   <h2>{{title}}</h2>
   {{#each inputData}}
-    <label for={{Field}}>{{Field}}:</label>
+    <label for={{Field}}>{{lookup ../headerNames [Field]}}:</label>
     <input type="text" name={{Field}} class="{{Type}} {{Null}} {{Key}} datainput" />
   {{/each}}
   <input id="submit" type="submit" value="Submit" />
