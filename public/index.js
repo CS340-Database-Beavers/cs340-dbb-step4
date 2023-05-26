@@ -1,4 +1,9 @@
 // const { response } = require("express");
+const tableIDs = {
+  employees: "employee_id",
+  roles: "role_id",
+  projects: "project_id",
+};
 
 // Object definitions
 const submit = document.getElementById("submit");
@@ -154,10 +159,41 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
             newCell.classList.add(attribute);
           });
           row.appendChild(newCell);
-          if(document.getElementById(key).classList.contains("FK")){
-            var fkCell = document.createElement("td");
-            fkCell.textContent = "tbd";
-            row.appendChild(fkCell);
+          if (document.getElementById(key).classList.contains("FK")) {
+            parentCell = document.getElementById(key).nextSibling.nextSibling;
+            // console.log(parentCell)
+            fetch("/custQuery", {
+              headers: {
+                "Content-Type": "application/json",
+                query:
+                  "SELECT " +
+                  parentCell.id +
+                  " FROM " +
+                  parentCell.getAttribute("headers") +
+                  " WHERE " +
+                  tableIDs[parentCell.getAttribute("headers")] +
+                  " = " +
+                  i +
+                  ";",
+              },
+            }).then((response) => {
+              if (!response.ok) {
+                return response.text().then((error) => {
+                  throw new Error(error);
+                });
+              }
+  
+              return response.json();
+            })
+              .then((data) => {
+                console.log(data)
+                var fkCell = document.createElement("td");
+                fkCell.textContent = data[parentCell.id];
+                row.appendChild(fkCell);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           }
         }
 

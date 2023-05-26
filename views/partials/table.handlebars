@@ -75,7 +75,11 @@
         {{!-- <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th> --}}
         {{#if (ifEquals Field ../fkInfo)}}
           {{#with (lookup ../fkTable [Field])}}
-            <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{Field}}</th>
+           <th id="{{Field}}"
+          {{/with}}
+           headers={{getReferenceTable Field ../fkInfo}}
+           {{#with (lookup ../fkTable [Field])}}
+             class="{{Type}} {{Null}} {{Key}} FKname">{{Field}}</th>
           {{/with}}
         {{/if}}
       {{/each}}

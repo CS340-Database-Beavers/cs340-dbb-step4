@@ -47,6 +47,12 @@ const hbs = exphbs.create({
       );
       return matchingForeignKey ? true : false;
     },
+    getReferenceTable: function (columnName, fkInfo) {
+      const matchingForeignKey = fkInfo.find(
+        (fk) => fk.COLUMN_NAME === columnName
+      );
+      return matchingForeignKey.REFERENCED_TABLE_NAME;
+    },
   },
 });
 
