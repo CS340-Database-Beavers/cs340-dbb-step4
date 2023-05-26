@@ -374,11 +374,42 @@ table.addEventListener("click", function (event) {
         }
         return;
       }
+      if (
+        event.target.parentNode.parentNode.parentNode.className == "projects"
+      ) {
+        const terminate = confirm(
+          "Are you sure you want to mark " +
+            event.target.parentNode.querySelector("td[headers='project_name']")
+              .innerText +
+            " as inactive?"
+        );
+        if (terminate) {
+          fetch("/editData", {
+            method: "POST",
+            body: JSON.stringify({
+              pageID:
+                event.target.parentNode.firstChild.getAttribute("headers"),
+              index: event.target.parentNode.id,
+              page: event.target.parentNode.parentNode.parentNode.className,
+              key: "is_ongoing",
+              newString: "0",
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((response) => {
+            const pageSize = parseInt(
+              document.getElementById("entriesDropdown").value
+            );
+            renderTable(pageSize, 1, 0);
+          });
+        }
+        return;
+      }
       const deleteRow = confirm(
-        "Are you sure you want to mark " +
-          event.target.parentNode.querySelector("td[headers='name']")
-            .innerText +
-          " as inactive?"
+        "Are you sure you want to delete row " +
+          event.target.parentNode.id +
+          "? This action cannot be undone."
       );
       if (deleteRow) {
         fetch("/removeData", {
