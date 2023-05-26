@@ -21,6 +21,7 @@ var tableDataLength = 0;
 // ---------Functions---------
 
 function validate(element) {
+  console.log(element.value)
   if (
     element.classList.contains("PRI") ||
     (element.classList.contains("YES") &&
@@ -29,7 +30,7 @@ function validate(element) {
     return { bool: true, data: "DEFAULT" };
   }
   if (element.classList.contains("date")) {
-    var newDate = element.value == "" ? new Date() : new Date(element.value);
+    var newDate = element.value === undefined ? new Date(element.innerText) : (element.value == "" ? new Date() : new Date(element.value));
     if (newDate == "Invalid Date") {
       return { bool: false, err: "Inavlid Date" };
     } else {
@@ -139,7 +140,10 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
         for (var key in data[i]) {
           var newCell = document.createElement("td");
           newCell.textContent = data[i][key];
-          newCell.classList.add(key);
+          newCell.setAttribute("headers", key);
+          document.getElementById(key).classList.forEach((attribute) => {
+            newCell.classList.add(attribute);
+          });
           row.appendChild(newCell);
         }
 
@@ -378,30 +382,75 @@ table.addEventListener("mouseover", function () {
     });
 
     cell.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
+      if (event.key === "Enter" && cell.isContentEditable) {
         event.preventDefault();
-        editData();
+        editData("enter");
       }
     });
 
-    cell.addEventListener("blur", () => editData());
+    cell.addEventListener("blur", (event) => {
+      if (cell.isContentEditable) {
+        editData("blur");
+      }
+    });
 
-    function editData() {
-      cell.contentEditable = "false";
-      cell.classList.remove("editing");
-      fetch("/editData", {
-        method: "POST",
-        body: JSON.stringify({
-          pageID: cell.parentNode.firstChild.className,
-          index: cell.parentNode.id,
-          key: cell.className,
-          newString: cell.textContent,
-          page: cell.parentNode.parentNode.parentNode.className,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    function editData(debugstr) {
+      var validateData = validate(cell);
+      if (validateData.bool) {
+        cell.contentEditable = "false";
+        cell.classList.remove("editing");
+        fetch("/editData", {
+          method: "POST",
+          body: JSON.stringify({
+            pageID: cell.parentNode.firstChild.getAttribute("headers"),
+            index: cell.parentNode.id,
+            key: cell.getAttribute("headers"),
+            newString: validateData.data,
+            page: cell.parentNode.parentNode.parentNode.className,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        cell.contentEditable = "false";
+        cell.classList.remove("editing");
+        fetch("/custQuery", {
+          headers: {
+            "Content-Type": "application/json",
+            query:
+              "SELECT " +
+              cell.getAttribute("headers") +
+              " FROM " +
+              cell.parentNode.parentNode.parentNode.className +
+              " WHERE " +
+              cell.parentNode.firstChild.getAttribute("headers") +
+              " = " +
+              cell.parentNode.id,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.text().then((error) => {
+                throw new Error(error);
+              });
+            }
+
+            return response.json();
+          })
+          .then((data) => {
+            alert("Error: " + validateData.err);
+            cell.innerText = data[0][cell.getAttribute("headers")];
+          })
+          .catch((error) => {
+            const errorDiv = document.createElement("div");
+            errorDiv.classList.add("error", "status");
+            errorDiv.setAttribute("role", "alert");
+
+            errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+            table.appendChild(errorDiv);
+          });
+      }
       // location.reload();
     }
   }

@@ -107,7 +107,7 @@ app.get("/custQuery", function (req, res, next) {
   var custQ = req.headers.query;
   runSingleQueries(custQ)
     .then(function (returndata) {
-      // console.log("results " + returndata)
+      console.log("results " + returndata)
       try {
         res.header("Content-Type", "application/json");
         res.status(200).send(JSON.stringify(returndata));
@@ -163,7 +163,7 @@ app.post("/removeData", function (req, res, next) {
   var deleteQ =
     "DELETE FROM " +
     req.body.page +
-    " WHERE " +
+    " WHERE '" +
     req.body.pageID +
     "=" +
     req.body.index +
@@ -189,9 +189,9 @@ app.post("/editData", function (req, res, next) {
     req.body.page +
     " SET " +
     req.body.key +
-    "=" +
+    "='" +
     req.body.newString +
-    " WHERE " +
+    "' WHERE " +
     req.body.pageID +
     "=" +
     req.body.index +
