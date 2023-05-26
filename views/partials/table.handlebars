@@ -71,7 +71,12 @@
   <thead>
     <tr>
       {{#each tableData}}
-        <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th>
+        <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey Field ../fkInfo}}">{{lookup ../headerNames [Field]}}</th>
+        {{#if (ifEquals Field ../fkInfo)}}
+          {{!-- {{#with (getTableFromFK Field ../fkInfo)}}
+            <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey Field ../fkInfo}}">{{lookup ../headerNames [Field]}}</th>
+          {{/with}} --}}
+        {{/if}}
       {{/each}}
       <th>Remove</th>
     </tr>

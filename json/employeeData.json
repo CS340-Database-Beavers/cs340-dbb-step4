@@ -3,6 +3,7 @@
   "hire_date": "Hire Date",
   "name": "Name",
   "role": "Role ID",
+  "role_name": "Role Name",
   "is_active": "Active",
   "address": "Address",
   "birthdate": "Birth Date"

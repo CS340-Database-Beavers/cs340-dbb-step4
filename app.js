@@ -31,7 +31,26 @@ const data = {
 };
 var mainDir = require("./json/mainDir.json");
 //Handlebars
-app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
+const hbs = exphbs.create({
+  defaultLayout: "main",
+  helpers: {
+    hasForeignKey: function (columnName, fkInfo) {
+      const matchingForeignKey = fkInfo.find(
+        (fk) => fk.COLUMN_NAME === columnName
+      );
+      return matchingForeignKey ? "FK" : "";
+    },
+    ifEquals: function (columnName, fkInfo) {
+      const matchingForeignKey = fkInfo.find(
+        (fk) => fk.COLUMN_NAME === columnName
+      );
+      return matchingForeignKey ? true : false;
+    },
+  },
+});
+
+// Configure Express to use the custom handlebars instance
+app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 
 app.use(express.json());
@@ -86,6 +105,27 @@ async function runSingleQueries(query) {
   }
 }
 
+async function getTableFromFK(fkInfo) {
+  var retVal = []
+  fkInfo.forEach((fk) => {
+    var columnsQ = "SHOW COLUMNS FROM " + fk.REFERENCED_TABLE_NAME + ";";
+    runSingleQueries(columnsQ)
+      .then(function (returndata) {
+        // console.log("results " + returndata);
+        try {
+          // console.log("results " + returndata.find(column => column.Field.includes('name')).Field);
+          return returndata.find((column) => column.Field.includes("name"));
+        } catch (err) {
+          console.log(err);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+  return retVal;
+}
+
 runArrQueries(ddl);
 // runQueries(dml);
 runSingleQueries("SHOW COLUMNS FROM employees")
@@ -107,7 +147,7 @@ app.get("/custQuery", function (req, res, next) {
   var custQ = req.headers.query;
   runSingleQueries(custQ)
     .then(function (returndata) {
-      console.log("results " + returndata)
+      console.log("results " + returndata);
       try {
         res.header("Content-Type", "application/json");
         res.status(200).send(JSON.stringify(returndata));
@@ -234,16 +274,41 @@ app.get("/employee*-project*", function (req, res) {
 
 app.get("/*employee*", function (req, res) {
   var columnsQ = "SHOW COLUMNS FROM employees;";
+  var fkQ =
+    "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = 'employees' AND CONSTRAINT_NAME <> 'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL;";
   runSingleQueries(columnsQ)
     .then(function (returndata) {
-      console.log("results " + returndata);
+      // console.log("results " + returndata);
       try {
-        res
-          .status(200)
-          .render("employees", {
-            employeeData: employeeData,
-            mainDirData: mainDir,
-            atributeInfo: returndata,
+        runSingleQueries(fkQ)
+          .then(function (fks) {
+            // console.log("results " + returndata);
+            try {
+              getTableFromFK(fks)
+                .then(function (table) {
+                  console.log("results " + table);
+                  try {
+                    res.status(200).render("employees", {
+                      employeeData: employeeData,
+                      mainDirData: mainDir,
+                      atributeInfo: returndata,
+                      fkInfo: fks,
+                    });
+                  } catch (err) {
+                    res.status(500).send("Server failed to respond: " + err);
+                  }
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).send("Server failed to respond: " + err);
+                });
+            } catch (err) {
+              res.status(500).send("Server failed to respond: " + err);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send("Server failed to respond: " + err);
           });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
@@ -261,13 +326,11 @@ app.get("/*project*", function (req, res) {
     .then(function (returndata) {
       console.log("results " + returndata);
       try {
-        res
-          .status(200)
-          .render("projects", {
-            projectData: projectData,
-            mainDirData: mainDir,
-            atributeInfo: returndata,
-          });
+        res.status(200).render("projects", {
+          projectData: projectData,
+          mainDirData: mainDir,
+          atributeInfo: returndata,
+        });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
@@ -284,13 +347,11 @@ app.get("/*salary", function (req, res) {
     .then(function (returndata) {
       console.log("results " + returndata);
       try {
-        res
-          .status(200)
-          .render("salaries", {
-            salaryData: salaryData,
-            mainDirData: mainDir,
-            atributeInfo: returndata,
-          });
+        res.status(200).render("salaries", {
+          salaryData: salaryData,
+          mainDirData: mainDir,
+          atributeInfo: returndata,
+        });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
@@ -307,13 +368,11 @@ app.get("/*salaries", function (req, res) {
     .then(function (returndata) {
       console.log("results " + returndata);
       try {
-        res
-          .status(200)
-          .render("salaries", {
-            salaryData: salaryData,
-            mainDirData: mainDir,
-            atributeInfo: returndata,
-          });
+        res.status(200).render("salaries", {
+          salaryData: salaryData,
+          mainDirData: mainDir,
+          atributeInfo: returndata,
+        });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
@@ -330,13 +389,11 @@ app.get("/*role*", function (req, res) {
     .then(function (returndata) {
       console.log("results " + returndata);
       try {
-        res
-          .status(200)
-          .render("roles", {
-            roleData: roleData,
-            mainDirData: mainDir,
-            atributeInfo: returndata,
-          });
+        res.status(200).render("roles", {
+          roleData: roleData,
+          mainDirData: mainDir,
+          atributeInfo: returndata,
+        });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
       }
