@@ -361,6 +361,8 @@ app.get("/*project*", function (req, res) {
           projectData: projectData,
           mainDirData: mainDir,
           atributeInfo: returndata,
+          fkInfo: [],
+          fkTable: [],
         });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);
@@ -480,6 +482,8 @@ app.get("/*role*", function (req, res) {
           roleData: roleData,
           mainDirData: mainDir,
           atributeInfo: returndata,
+          fkInfo: [],
+          fkTable: [],
         });
       } catch (err) {
         res.status(500).send("Server failed to respond: " + err);

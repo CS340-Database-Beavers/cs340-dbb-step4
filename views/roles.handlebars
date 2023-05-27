@@ -1,6 +1,6 @@
 <div class="container">
   {{!-- Create Table for each employee data --}}
-  {{> table tableData=atributeInfo headerNames=roleData page="roles"}}
+  {{> table tableData=atributeInfo headerNames=roleData fkInfo=fkInfo fkTable=fkTable page="roles"}}
   {{!-- Using the labels from employee data make add form --}}
   {{> form inputData=atributeInfo headerNames=roleData title="Add Role" page="roles"}}
 </div>

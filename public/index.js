@@ -145,182 +145,250 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       return response.json();
     })
     .then((data) => {
-      // console.log(data);
-      var rows = [];
-      for (var i = 0; i < data.length; i++) {
-        const row = document.createElement("tr");
-        row.id = data[i][Object.keys(data[i])[0]];
-        // Add table cells
-        for (var key in data[i]) {
-          var newCell = document.createElement("td");
-          newCell.textContent = data[i][key];
-          newCell.setAttribute("headers", key);
-          document.getElementById(key).classList.forEach((attribute) => {
-            newCell.classList.add(attribute);
+      console.log(document.getElementsByClassName("FKname")[0]);
+      var newQ =
+        document.getElementsByClassName("FKname")[0] ===
+        undefined
+          ? "employees"
+          : document
+              .getElementsByClassName("FKname")[0]
+              .getAttribute("headers");
+      console.log(newQ)
+      fetch("/custQuery", {
+        headers: {
+          "Content-Type": "application/json",
+          query: "SELECT * FROM " + newQ + ";",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return response.text().then((error) => {
+              throw new Error(error);
+            });
+          }
+
+          return response.json();
+        })
+        .then((fkdata) => {
+          fkdata.sort(function (a, b) {
+            var firstColA = parseFloat(a[Object.keys(a)[0]]);
+            var firstColB = parseFloat(b[Object.keys(b)[0]]);
+            return firstColA - firstColB;
           });
-          row.appendChild(newCell);
-          if (document.getElementById(key).classList.contains("FK")) {
-            parentCell = document.getElementById(key).nextSibling.nextSibling;
-            // console.log(parentCell)
-            fetch("/custQuery", {
-              headers: {
-                "Content-Type": "application/json",
-                query:
-                  "SELECT " +
-                  parentCell.id +
-                  " FROM " +
-                  parentCell.getAttribute("headers") +
-                  " WHERE " +
-                  tableIDs[parentCell.getAttribute("headers")] +
-                  " = " +
-                  i +
-                  ";",
-              },
-            }).then((response) => {
-              if (!response.ok) {
-                return response.text().then((error) => {
-                  throw new Error(error);
-                });
-              }
-  
-              return response.json();
-            })
-              .then((data) => {
-                console.log(data)
-                var fkCell = document.createElement("td");
-                fkCell.textContent = data[parentCell.id];
-                row.appendChild(fkCell);
-              })
-              .catch((error) => {
-                console.log(error);
+          // console.log(data);
+          var rows = [];
+          for (var i = 0; i < data.length; i++) {
+            const row = document.createElement("tr");
+            row.id = data[i][Object.keys(data[i])[0]];
+            // Add table cells
+            for (var key in data[i]) {
+              var newCell = document.createElement("td");
+              newCell.textContent = data[i][key];
+              newCell.setAttribute("headers", key);
+              document.getElementById(key).classList.forEach((attribute) => {
+                newCell.classList.add(attribute);
               });
+              row.appendChild(newCell);
+              if (document.getElementById(key).classList.contains("FK")) {
+                parentCell =
+                  document.getElementById(key).nextSibling.nextSibling;
+
+                var fkCell = document.createElement("td");
+                fkCell.setAttribute("headers", parentCell.id);
+                parentCell.classList.forEach((attribute) => {
+                  fkCell.classList.add(attribute);
+                });
+
+                // console.log(fkCells[i]);
+
+                // console.log(fkCell);
+                // for (var j = 1; j < fkCells.length; j++) {
+                // console.log(fkCell.innerText);
+                // if (fkCell.innerHTML == "") {
+                  console.log(fkdata[i])
+                fkCell.innerText = fkdata[data[i][key]-1][parentCell.id];
+                // break;
+                // }
+                // }
+
+                row.appendChild(fkCell);
+              }
+              // console.log(parentCell)
+            }
+
+            const removeCell = document.createElement("td");
+            removeCell.innerHTML = "&#128465";
+            removeCell.align = "center";
+            removeCell.classList.add("removeicon");
+            row.appendChild(removeCell);
+
+            rows[i] = row;
+            // console.log(row);
           }
-        }
 
-        const removeCell = document.createElement("td");
-        removeCell.innerHTML = "&#128465";
-        removeCell.align = "center";
-        removeCell.classList.add("removeicon");
-        row.appendChild(removeCell);
+          // const sortFn = (a, b) => {
+          //   var keyA = Object.keys(a)[columnIndex];
+          //   var keyB = Object.keys(b)[columnIndex];
+          //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
+          //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
+          //   return 0; // If the values are equal
+          // };
+          const sortFn = (a, b) => {
+            const cellA = isNaN(parseFloat(a.cells[sortIndex].textContent))
+              ? a.cells[sortIndex].textContent
+              : parseFloat(a.cells[sortIndex].textContent);
+            const cellB = isNaN(parseFloat(b.cells[sortIndex].textContent))
+              ? b.cells[sortIndex].textContent
+              : parseFloat(b.cells[sortIndex].textContent);
+            if (cellA < cellB) return ascending ? -1 : 1;
+            if (cellA > cellB) return ascending ? 1 : -1;
+            return 0;
+          };
+          rows.sort(sortFn);
 
-        rows[i] = row;
-        // console.log(row);
-      }
+          const filter = searchInput.value.toUpperCase();
+          rowsToFilter = [];
+          for (let i = 0; i < rows.length; i++) {
+            let rowVisible = false;
+            const cells = rows[i].childNodes;
 
-      // const sortFn = (a, b) => {
-      //   var keyA = Object.keys(a)[columnIndex];
-      //   var keyB = Object.keys(b)[columnIndex];
-      //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
-      //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
-      //   return 0; // If the values are equal
-      // };
-      const sortFn = (a, b) => {
-        const cellA = isNaN(parseFloat(a.cells[sortIndex].textContent))
-          ? a.cells[sortIndex].textContent
-          : parseFloat(a.cells[sortIndex].textContent);
-        const cellB = isNaN(parseFloat(b.cells[sortIndex].textContent))
-          ? b.cells[sortIndex].textContent
-          : parseFloat(b.cells[sortIndex].textContent);
-        if (cellA < cellB) return ascending ? -1 : 1;
-        if (cellA > cellB) return ascending ? 1 : -1;
-        return 0;
-      };
-      rows.sort(sortFn);
+            for (let j = 0; j < cells.length; j++) {
+              const cell = cells[j];
+              const cellValue = cell.textContent || cell.innerText;
+              if (filterInputs[j]) {
+                var colFilter = filterInputs[j].value.toUpperCase();
+              } else {
+                var colFilter = "";
+              }
+              // console.log(filterInputs[j].value.toUpperCase())
 
-      const filter = searchInput.value.toUpperCase();
-      rowsToFilter = [];
-      for (let i = 0; i < rows.length; i++) {
-        let rowVisible = false;
-        const cells = rows[i].childNodes;
+              // if (cellValue.toUpperCase().indexOf(filter) > -1) {
+              //   rowVisible = true;
+              //   break;
+              // }
+              // const filterInputs = document.querySelectorAll("#input-row input");
+              // console.log(
+              //   "row " +
+              //     i +
+              //     " " +
+              //     cellValue.toUpperCase().indexOf(filter) +
+              //     " and " +
+              //     cellValue.toUpperCase().indexOf(colFilter)
+              // );
+              // console.log("col " + j + " filter " + colFilter)
+              if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
+                rowVisible = false;
+                break;
+              } else if (cellValue.toUpperCase().indexOf(filter) > -1) {
+                rowVisible = true;
+              }
+            }
 
-        for (let j = 0; j < cells.length; j++) {
-          const cell = cells[j];
-          const cellValue = cell.textContent || cell.innerText;
-          if (filterInputs[j]) {
-            var colFilter = filterInputs[j].value.toUpperCase();
-          } else {
-            var colFilter = "";
+            if (!rowVisible) {
+              rowsToFilter.unshift(i);
+            }
           }
-          // console.log(filterInputs[j].value.toUpperCase())
+          for (var i = 0; i < rowsToFilter.length; i++) {
+            console.log("Filtering row: " + rowsToFilter[i]);
+            rows.splice(rowsToFilter[i], 1);
+          }
 
-          // if (cellValue.toUpperCase().indexOf(filter) > -1) {
-          //   rowVisible = true;
-          //   break;
+          tbody.innerHTML = ""; // Clear existing table
+
+          // Calculate the start and end index of the current page
+          const startIndex = (currentPage - 1) * pageSize;
+          const endIndex = startIndex + pageSize;
+
+          // Iterate over the data and create table rows
+          for (let i = startIndex; i < endIndex && i < rows.length; i++) {
+            // const row = document.createElement("tr");
+            // row.id = i;
+            // // Add table cells
+            // for (var key in data[i]) {
+            //   var newCell = document.createElement("td");
+            //   newCell.textContent = data[i][key];
+            //   newCell.classList.add(key);
+            //   row.appendChild(newCell);
+            // }
+
+            // const removeCell = document.createElement("td");
+            // removeCell.innerHTML = "&#128465";
+            // removeCell.align = "center";
+            // removeCell.classList.add("removeicon");
+            // row.appendChild(removeCell);
+
+            // Add the row to the table
+            tbody.appendChild(rows[i]);
+            resizeTable();
+          }
+
+          // var fkCells = document.getElementsByClassName("FKname")
+          // var parentCell = fkCells[0]
+          // // console.log(fkCells[0].getAttribute("headers"))
+          // for(var i = i; i < fkCells.length; i++) {
+          // // fkCells.forEach(element => {
+          //   console.log(fkCells[i]);
+          //   fetch("/custQuery", {
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //       query:
+          //         "SELECT " +
+          //         parentCell.id +
+          //         " FROM " +
+          //         parentCell.getAttribute("headers") +
+          //         " WHERE " +
+          //         tableIDs[parentCell.getAttribute("headers")] +
+          //         " = " +
+          //         i +
+          //         ";",
+          //     },
+          //   })
+          //     .then((response) => {
+          //       if (!response.ok) {
+          //         return response.text().then((error) => {
+          //           throw new Error(error);
+          //         });
+          //       }
+
+          //       return response.json();
+          //     })
+          //     .then((fkdata) => {
+          //       console.log(fkdata[0][parentCell.id]);
+          //       for(var j = 1; j < fkCells.length; j++) {
+          //         console.log(fkCells[j].innerText)
+          //         if (fkCells[j].innerHTML==''){
+          //           fkCells[j].innerText = fkdata[0][parentCell.id]
+          //           break;
+          //         }
+          //       }
+          //     })
+          //     .catch((error) => {
+          //       console.log(error);
+          //     });
           // }
-          // const filterInputs = document.querySelectorAll("#input-row input");
-          // console.log(
-          //   "row " +
-          //     i +
-          //     " " +
-          //     cellValue.toUpperCase().indexOf(filter) +
-          //     " and " +
-          //     cellValue.toUpperCase().indexOf(colFilter)
-          // );
-          // console.log("col " + j + " filter " + colFilter)
-          if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
-            rowVisible = false;
-            break;
-          } else if (cellValue.toUpperCase().indexOf(filter) > -1) {
-            rowVisible = true;
+
+          // Update data info
+          const startInfo = startIndex + 1;
+          const endInfo = Math.min(endIndex, data.length);
+          dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
+
+          pagination.innerHTML = ""; // Clear existing pagination
+
+          // Calculate the total number of pages
+          const totalPages = Math.ceil(data.length / pageSize);
+          // console.log(data.length + " / " + pageSize + " = " + totalPages);
+          // Create pagination buttons
+          for (let i = 1; i <= totalPages; i++) {
+            // console.log("page making");
+            const button = document.createElement("button");
+            button.textContent = i;
+            button.addEventListener("click", handlePaginationNavigation);
+            pagination.appendChild(button);
           }
-        }
-
-        if (!rowVisible) {
-          rowsToFilter.unshift(i);
-        }
-      }
-      for (var i = 0; i < rowsToFilter.length; i++) {
-        console.log("Filtering row: " + rowsToFilter[i]);
-        rows.splice(rowsToFilter[i], 1);
-      }
-
-      tbody.innerHTML = ""; // Clear existing table
-
-      // Calculate the start and end index of the current page
-      const startIndex = (currentPage - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-
-      // Iterate over the data and create table rows
-      for (let i = startIndex; i < endIndex && i < rows.length; i++) {
-        // const row = document.createElement("tr");
-        // row.id = i;
-        // // Add table cells
-        // for (var key in data[i]) {
-        //   var newCell = document.createElement("td");
-        //   newCell.textContent = data[i][key];
-        //   newCell.classList.add(key);
-        //   row.appendChild(newCell);
-        // }
-
-        // const removeCell = document.createElement("td");
-        // removeCell.innerHTML = "&#128465";
-        // removeCell.align = "center";
-        // removeCell.classList.add("removeicon");
-        // row.appendChild(removeCell);
-
-        // Add the row to the table
-        tbody.appendChild(rows[i]);
-        resizeTable();
-      }
-
-      // Update data info
-      const startInfo = startIndex + 1;
-      const endInfo = Math.min(endIndex, data.length);
-      dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
-
-      pagination.innerHTML = ""; // Clear existing pagination
-
-      // Calculate the total number of pages
-      const totalPages = Math.ceil(data.length / pageSize);
-      // console.log(data.length + " / " + pageSize + " = " + totalPages);
-      // Create pagination buttons
-      for (let i = 1; i <= totalPages; i++) {
-        // console.log("page making");
-        const button = document.createElement("button");
-        button.textContent = i;
-        button.addEventListener("click", handlePaginationNavigation);
-        pagination.appendChild(button);
-      }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     })
     .catch((error) => {
       // Handle any errors that occurred during the request
