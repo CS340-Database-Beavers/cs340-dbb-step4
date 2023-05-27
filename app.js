@@ -15,8 +15,8 @@ require.extensions[".sql"] = async function (module, filename) {
   module.exports = rawSQL.split(";\r\n");
 };
 // Database
-// var db = require("./db-connector");
-var db = require("./db-connector-humberj");
+var db = require("./db-connector");
+// var db = require("./db-connector-humberj");
 var ddl = require("./DDL.sql");
 var dml = require("./DML.sql");
 var employeeData = require("./json/employeeData.json");
