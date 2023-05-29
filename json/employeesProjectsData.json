@@ -1,8 +1,6 @@
-[
-  {
-    "Employee": "John Smith",
-    "Project": "none",
-    "Workdate": "1111-1-1",
-    "Hours": 0
-  }
-]
+{
+  "employee_id": "Employee ID",
+  "project_id": "Project",
+  "date_of_work": "Date of Work",
+  "number_hours": "Hours Worked"
+}

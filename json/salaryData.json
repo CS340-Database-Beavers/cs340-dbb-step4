@@ -1,14 +1,6 @@
-[
-  {
-    "ID": 1,
-    "Effectivedate": "1111-1-1",
-    "Pay": 1234.56,
-    "EmployeeID": 1
-  },
-  {
-    "ID": "2",
-    "Effectivedate": "now",
-    "Pay": "test",
-    "EmployeeID": "1"
-  }
-]
+{
+  "salary_id": "ID",
+  "effective_date": "Effective Date",
+  "pay_amount": "Pay",
+  "employee_id": "Employee ID"
+}

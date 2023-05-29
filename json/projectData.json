@@ -1,26 +1,8 @@
-[
-  {
-    "ID": 1,
-    "Ongoing": true,
-    "Percent_Complete": "0",
-    "Deadline": "1111-1-1",
-    "Startdate": "1111-1-1",
-    "Name": "none"
-  },
-  {
-    "ID": "",
-    "Ongoing": "0",
-    "Percent_Complete": "100",
-    "Deadline": "2022-1-1",
-    "Startdate": "2021-1-1",
-    "Name": "Wall-E"
-  },
-  {
-    "ID": "55",
-    "Ongoing": "True",
-    "Percent_Complete": "55",
-    "Deadline": "2023-12-12",
-    "Startdate": "two thousand and twenty four",
-    "Name": "Skynet"
-  }
-]
+{
+  "project_id": "ID",
+  "is_ongoing": "Ongoing",
+  "percent_completed": "Percent Complete",
+  "deadline": "Deadline",
+  "start_date": "Start Date",
+  "project_name": "Name"
+}

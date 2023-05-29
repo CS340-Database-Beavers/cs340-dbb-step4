@@ -1,4 +1,4 @@
 <div class="container">
-  {{> table tableData=employeesProjectsData page="employees_projects"}}
-  {{> form inputData='' title="" page="employees"}}
+  {{> table tableData=atributeInfo headerNames=employeesProjectsData fkInfo=fkInfo fkTable=fkTable page="employees_projects"}}
+  {{> form inputData=atributeInfo headerNames=employeesProjectsData title="Add an Existing Employee To an Existing Project" page="employees_projects"}}
 </div>

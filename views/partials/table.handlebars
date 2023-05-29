@@ -70,28 +70,34 @@
 <table class={{page}} id="datatable">
   <thead>
     <tr>
-      {{#each tableData.[0]}}
-        <th>{{@key}}</th>
+      {{#each tableData}}
+        <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey [Field] ../fkInfo}}">{{lookup ../headerNames [Field]}}</th>
+        {{!-- <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th> --}}
+        {{#if (ifEquals Field ../fkInfo)}}
+          {{#with (lookup ../fkTable [Field])}}
+           <th id="{{Field}}"
+          {{/with}}
+           headers={{getReferenceTable Field ../fkInfo}}
+           {{#with (lookup ../fkTable [Field])}}
+             class="{{Type}} {{Null}} {{Key}} FKname">{{Field}}</th>
+          {{/with}}
+        {{/if}}
       {{/each}}
       <th>Remove</th>
     </tr>
     <tr id="input-row" class="d-hidden">
-      {{#each tableData.[0]}}
-        <td> <input type="text" /> </td>
+      {{#each tableData}}
+        <td headers={{Field}}> <input type="text" /> </td>
+        {{#if (ifEquals Field ../fkInfo)}}
+          {{#with (lookup ../fkTable [Field])}}
+            <td headers={{Field}}> <input type="text" /> </td>
+          {{/with}}
+        {{/if}}
       {{/each}}
       <td></td>
     </tr>
   </thead>
   <tbody>
-
-    {{#each tableData}}
-      <tr id={{@index}}>
-        {{#each this}}
-          <td class={{@key}}>{{this}}</td>
-        {{/each}}
-        <td align="center" style="padding: 0px" class="removeicon">&#128465</td>
-      </tr>
-    {{/each}}
   </tbody>
 </table>
 <div>

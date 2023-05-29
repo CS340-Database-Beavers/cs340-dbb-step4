@@ -1,6 +1,4 @@
-[
-    {
-        "ID": 1,
-        "Name": "CEO of Beavers for Better"
-    }
-]
+{
+  "role_id": "ID",
+  "role_name": "Name"
+}

@@ -1,7 +1,13 @@
 // const { response } = require("express");
+const tableIDs = {
+  employees: "employee_id",
+  roles: "role_id",
+  projects: "project_id",
+};
 
 // Object definitions
 const submit = document.getElementById("submit");
+const form = document.getElementById("dataform");
 
 const table = document.getElementById("datatable");
 const headerCells = table.querySelectorAll("th");
@@ -13,19 +19,76 @@ const filterInputs = document.querySelectorAll("#input-row input");
 const filterBtn = document.getElementById("filterToggleBtn");
 const dataInfo = document.getElementById("dataInfo");
 const pagination = document.getElementById("pagination");
+
 const forminputs = document.getElementsByClassName("datainput");
 
 var tableDataLength = 0;
 // ---------Functions---------
+
+function validate(element) {
+  // console.log(element.value);
+  if (
+    (element.classList.contains("PRI") &&
+      (element.value == "" || element.value == "NULL")) ||
+    (element.classList.contains("YES") &&
+      (element.value == "" || element.value == "NULL"))
+  ) {
+    return { bool: true, data: "DEFAULT" };
+  }
+  if (element.classList.contains("date")) {
+    var newDate =
+      element.value === undefined
+        ? new Date(element.innerText)
+        : element.value == ""
+        ? new Date()
+        : new Date(element.value);
+    if (newDate == "Invalid Date") {
+      return { bool: false, err: "Inavlid Date" };
+    } else {
+      return { bool: true, data: newDate.toISOString() };
+    }
+  }
+  if (
+    element.classList.contains("NO") &&
+    (element.value == "" || element.value == "NULL") &&
+    !element.classList.contains("PRI")
+  ) {
+    return { bool: false, err: "Field cannot be NULL" };
+  }
+
+  return {
+    bool: true,
+    data: element.value === undefined ? element.innerText : element.value,
+  };
+}
 
 /**
  * Retrieves data from form on page
  * then passes it to the server through an POST call
  */
 function addData() {
+  event.preventDefault();
+  const statuses = form.querySelectorAll(".error");
+  statuses.forEach(function (status) {
+    status.remove();
+  });
   var newObject = {};
   for (let i = 0; i < forminputs.length; i++) {
-    newObject[forminputs[i].id] = forminputs[i].value;
+    validateData = validate(forminputs[i]);
+    if (validateData.bool) {
+      newObject[forminputs[i].getAttribute("name")] = validateData.data;
+    } else {
+      const errorDiv = document.createElement("div");
+      errorDiv.classList.add("error", "status");
+      errorDiv.setAttribute("role", "alert");
+
+      errorDiv.innerHTML = "<h3>❌ Error: " + validateData.err + "</h3>";
+      forminputs[i].parentNode.insertBefore(
+        errorDiv,
+        forminputs[i].nextSibling
+      );
+      return;
+    }
   }
   fetch("/addData", {
     method: "POST",
@@ -36,7 +99,28 @@ function addData() {
     headers: {
       "Content-Type": "application/json",
     },
-  });
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((error) => {
+          throw new Error(error);
+        });
+      }
+
+      form.reset();
+      const pageSize = parseInt(
+        document.getElementById("entriesDropdown").value
+      );
+      renderTable(pageSize, 1, 0);
+    })
+    .catch((error) => {
+      const errorDiv = document.createElement("div");
+      errorDiv.classList.add("error", "status");
+      errorDiv.setAttribute("role", "alert");
+
+      errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+      form.appendChild(errorDiv);
+    });
 }
 
 /**
@@ -61,135 +145,283 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
-      var rows = [];
-      for (var i = 0; i < data.length; i++) {
-        const row = document.createElement("tr");
-        row.id = data[i][Object.keys(data[i])[0]];
-        // Add table cells
-        for (var key in data[i]) {
-          var newCell = document.createElement("td");
-          newCell.textContent = data[i][key];
-          newCell.classList.add(key);
-          row.appendChild(newCell);
-        }
-
-        const removeCell = document.createElement("td");
-        removeCell.innerHTML = "&#128465";
-        removeCell.align = "center";
-        removeCell.classList.add("removeicon");
-        row.appendChild(removeCell);
-
-        rows[i] = row;
-      }
-
-      // const sortFn = (a, b) => {
-      //   var keyA = Object.keys(a)[columnIndex];
-      //   var keyB = Object.keys(b)[columnIndex];
-      //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
-      //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
-      //   return 0; // If the values are equal
-      // };
-      const sortFn = (a, b) => {
-        const cellA = isNaN(parseFloat(a.cells[sortIndex].textContent))
-          ? a.cells[sortIndex].textContent
-          : parseFloat(a.cells[sortIndex].textContent);
-        const cellB = isNaN(parseFloat(b.cells[sortIndex].textContent))
-          ? b.cells[sortIndex].textContent
-          : parseFloat(b.cells[sortIndex].textContent);
-        if (cellA < cellB) return ascending ? -1 : 1;
-        if (cellA > cellB) return ascending ? 1 : -1;
-        return 0;
-      };
-      rows.sort(sortFn);
-
-      const filter = searchInput.value.toUpperCase();
-      rowsToFilter = []
-      for (let i = 0; i < rows.length; i++) {
-        let rowVisible = false;
-        const cells = rows[i].childNodes;
-
-        for (let j = 0; j < cells.length; j++) {
-          const cell = cells[j];
-          const cellValue = cell.textContent || cell.innerText;
-          if(filterInputs[j]){
-            var colFilter = filterInputs[j].value.toUpperCase();
-          } else {
-            var colFilter = '';
+      console.log(document.getElementsByClassName("FKname"));
+      var newQ =
+        document.getElementsByClassName("FKname")[0] === undefined
+          ? "employees"
+          : document
+              .getElementsByClassName("FKname")[0]
+              .getAttribute("headers");
+      // console.log(newQ);
+      fetch("/custQuery", {
+        headers: {
+          "Content-Type": "application/json",
+          query: "SELECT * FROM " + newQ + ";",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return response.text().then((error) => {
+              throw new Error(error);
+            });
           }
-          // console.log(filterInputs[j].value.toUpperCase())
-          
-          // if (cellValue.toUpperCase().indexOf(filter) > -1) {
-          //   rowVisible = true;
-          //   break;
-          // }
-          // const filterInputs = document.querySelectorAll("#input-row input");
-          console.log("row " + i + ' ' + cellValue.toUpperCase().indexOf(filter) + " and " + cellValue.toUpperCase().indexOf(colFilter))
-          // console.log("col " + j + " filter " + colFilter)
-          if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
-            rowVisible = false;
-            break;
-          } else if (cellValue.toUpperCase().indexOf(filter) > -1) {
-            rowVisible = true;
-          }
-        }
 
-        if (!rowVisible) {
-          rowsToFilter.unshift(i)
-        }
-      }
-      for (var i = 0; i < rowsToFilter.length; i++){
-        console.log("Filtering row: " + rowsToFilter[i])
-        rows.splice(rowsToFilter[i], 1);
-      }
+          return response.json();
+        })
+        .then((fkdata) => {
+          fkdata.sort(function (a, b) {
+            var firstColA = parseFloat(a[Object.keys(a)[0]]);
+            var firstColB = parseFloat(b[Object.keys(b)[0]]);
+            return firstColA - firstColB;
+          });
+          var newQ =
+            document.getElementsByClassName("FKname")[1] === undefined
+              ? "projects"
+              : document
+                  .getElementsByClassName("FKname")[1]
+                  .getAttribute("headers");
+          console.log(document.getElementsByClassName("FKname")[1]);
+          fetch("/custQuery", {
+            headers: {
+              "Content-Type": "application/json",
+              query: "SELECT * FROM " + newQ + ";",
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                return response.text().then((error) => {
+                  throw new Error(error);
+                });
+              }
 
-      tbody.innerHTML = ""; // Clear existing table
+              return response.json();
+            })
+            .then((fkdata1) => {
+              fkdata1.sort(function (a, b) {
+                var firstColA = parseFloat(a[Object.keys(a)[0]]);
+                var firstColB = parseFloat(b[Object.keys(b)[0]]);
+                return firstColA - firstColB;
+              });
+              // console.log(data);
+              var rows = [];
+              for (var i = 0; i < data.length; i++) {
+                const row = document.createElement("tr");
+                row.id = data[i][Object.keys(data[i])[0]];
+                // Add table cells
+                for (var key in data[i]) {
+                  var newCell = document.createElement("td");
+                  newCell.textContent = data[i][key];
+                  newCell.setAttribute("headers", key);
+                  document
+                    .getElementById(key)
+                    .classList.forEach((attribute) => {
+                      newCell.classList.add(attribute);
+                    });
+                  row.appendChild(newCell);
+                  if (document.getElementById(key).classList.contains("FK")) {
+                    parentCell =
+                      document.getElementById(key).nextSibling.nextSibling;
 
-      // Calculate the start and end index of the current page
-      const startIndex = (currentPage - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
+                    var fkCell = document.createElement("td");
+                    fkCell.setAttribute("headers", parentCell.id);
+                    parentCell.classList.forEach((attribute) => {
+                      fkCell.classList.add(attribute);
+                    });
 
-      // Iterate over the data and create table rows
-      for (let i = startIndex; i < endIndex && i < rows.length; i++) {
-        // const row = document.createElement("tr");
-        // row.id = i;
-        // // Add table cells
-        // for (var key in data[i]) {
-        //   var newCell = document.createElement("td");
-        //   newCell.textContent = data[i][key];
-        //   newCell.classList.add(key);
-        //   row.appendChild(newCell);
-        // }
+                    // console.log(fkCells[i]);
 
-        // const removeCell = document.createElement("td");
-        // removeCell.innerHTML = "&#128465";
-        // removeCell.align = "center";
-        // removeCell.classList.add("removeicon");
-        // row.appendChild(removeCell);
+                    // console.log(fkCell);
+                    // for (var j = 1; j < fkCells.length; j++) {
+                    // console.log(fkCell.innerText);
+                    // if (fkCell.innerHTML == "") {
+                    console.log(fkdata1[i]);
+                    fkCell.innerText = fkdata[data[i][key] - 1][parentCell.id] === undefined ? fkdata1[data[i][key] - 1][parentCell.id] : fkdata[data[i][key] - 1][parentCell.id];
+                    // break;
+                    // }
+                    // }
 
-        // Add the row to the table
-        tbody.appendChild(rows[i]);
-        resizeTable();
-      }
+                    row.appendChild(fkCell);
+                  }
+                  // console.log(parentCell)
+                }
 
-      // Update data info
-      const startInfo = startIndex + 1;
-      const endInfo = Math.min(endIndex, data.length);
-      dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
+                const removeCell = document.createElement("td");
+                removeCell.innerHTML = "&#128465";
+                removeCell.align = "center";
+                removeCell.classList.add("removeicon");
+                row.appendChild(removeCell);
 
-      pagination.innerHTML = ""; // Clear existing pagination
+                rows[i] = row;
+                // console.log(row);
+              }
 
-      // Calculate the total number of pages
-      const totalPages = Math.ceil(data.length / pageSize);
-      // console.log(data.length + " / " + pageSize + " = " + totalPages);
-      // Create pagination buttons
-      for (let i = 1; i <= totalPages; i++) {
-        // console.log("page making");
-        const button = document.createElement("button");
-        button.textContent = i;
-        button.addEventListener("click", handlePaginationNavigation);
-        pagination.appendChild(button);
-      }
+              // const sortFn = (a, b) => {
+              //   var keyA = Object.keys(a)[columnIndex];
+              //   var keyB = Object.keys(b)[columnIndex];
+              //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) < (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? -1 : 1;
+              //   if ((isNaN(parseFloat(a[keyA])) ? a[keyA] : parseFloat(a[keyA])) > (isNaN(parseFloat(b[keyB])) ? b[keyB] : parseFloat(b[keyB]))) return ascending ? 1 : -1;
+              //   return 0; // If the values are equal
+              // };
+              const sortFn = (a, b) => {
+                const cellA = isNaN(parseFloat(a.cells[sortIndex].textContent))
+                  ? a.cells[sortIndex].textContent
+                  : parseFloat(a.cells[sortIndex].textContent);
+                const cellB = isNaN(parseFloat(b.cells[sortIndex].textContent))
+                  ? b.cells[sortIndex].textContent
+                  : parseFloat(b.cells[sortIndex].textContent);
+                if (cellA < cellB) return ascending ? -1 : 1;
+                if (cellA > cellB) return ascending ? 1 : -1;
+                return 0;
+              };
+              rows.sort(sortFn);
+
+              const filter = searchInput.value.toUpperCase();
+              rowsToFilter = [];
+              for (let i = 0; i < rows.length; i++) {
+                let rowVisible = false;
+                const cells = rows[i].childNodes;
+
+                for (let j = 0; j < cells.length; j++) {
+                  const cell = cells[j];
+                  const cellValue = cell.textContent || cell.innerText;
+                  if (filterInputs[j]) {
+                    var colFilter = filterInputs[j].value.toUpperCase();
+                  } else {
+                    var colFilter = "";
+                  }
+                  // console.log(filterInputs[j].value.toUpperCase())
+
+                  // if (cellValue.toUpperCase().indexOf(filter) > -1) {
+                  //   rowVisible = true;
+                  //   break;
+                  // }
+                  // const filterInputs = document.querySelectorAll("#input-row input");
+                  // console.log(
+                  //   "row " +
+                  //     i +
+                  //     " " +
+                  //     cellValue.toUpperCase().indexOf(filter) +
+                  //     " and " +
+                  //     cellValue.toUpperCase().indexOf(colFilter)
+                  // );
+                  // console.log("col " + j + " filter " + colFilter)
+                  if (cellValue.toUpperCase().indexOf(colFilter) == -1) {
+                    rowVisible = false;
+                    break;
+                  } else if (cellValue.toUpperCase().indexOf(filter) > -1) {
+                    rowVisible = true;
+                  }
+                }
+
+                if (!rowVisible) {
+                  rowsToFilter.unshift(i);
+                }
+              }
+              for (var i = 0; i < rowsToFilter.length; i++) {
+                console.log("Filtering row: " + rowsToFilter[i]);
+                rows.splice(rowsToFilter[i], 1);
+              }
+
+              tbody.innerHTML = ""; // Clear existing table
+
+              // Calculate the start and end index of the current page
+              const startIndex = (currentPage - 1) * pageSize;
+              const endIndex = startIndex + pageSize;
+
+              // Iterate over the data and create table rows
+              for (let i = startIndex; i < endIndex && i < rows.length; i++) {
+                // const row = document.createElement("tr");
+                // row.id = i;
+                // // Add table cells
+                // for (var key in data[i]) {
+                //   var newCell = document.createElement("td");
+                //   newCell.textContent = data[i][key];
+                //   newCell.classList.add(key);
+                //   row.appendChild(newCell);
+                // }
+
+                // const removeCell = document.createElement("td");
+                // removeCell.innerHTML = "&#128465";
+                // removeCell.align = "center";
+                // removeCell.classList.add("removeicon");
+                // row.appendChild(removeCell);
+
+                // Add the row to the table
+                tbody.appendChild(rows[i]);
+                resizeTable();
+              }
+
+              // var fkCells = document.getElementsByClassName("FKname")
+              // var parentCell = fkCells[0]
+              // // console.log(fkCells[0].getAttribute("headers"))
+              // for(var i = i; i < fkCells.length; i++) {
+              // // fkCells.forEach(element => {
+              //   console.log(fkCells[i]);
+              //   fetch("/custQuery", {
+              //     headers: {
+              //       "Content-Type": "application/json",
+              //       query:
+              //         "SELECT " +
+              //         parentCell.id +
+              //         " FROM " +
+              //         parentCell.getAttribute("headers") +
+              //         " WHERE " +
+              //         tableIDs[parentCell.getAttribute("headers")] +
+              //         " = " +
+              //         i +
+              //         ";",
+              //     },
+              //   })
+              //     .then((response) => {
+              //       if (!response.ok) {
+              //         return response.text().then((error) => {
+              //           throw new Error(error);
+              //         });
+              //       }
+
+              //       return response.json();
+              //     })
+              //     .then((fkdata) => {
+              //       console.log(fkdata[0][parentCell.id]);
+              //       for(var j = 1; j < fkCells.length; j++) {
+              //         console.log(fkCells[j].innerText)
+              //         if (fkCells[j].innerHTML==''){
+              //           fkCells[j].innerText = fkdata[0][parentCell.id]
+              //           break;
+              //         }
+              //       }
+              //     })
+              //     .catch((error) => {
+              //       console.log(error);
+              //     });
+              // }
+
+              // Update data info
+              const startInfo = startIndex + 1;
+              const endInfo = Math.min(endIndex, data.length);
+              dataInfo.textContent = `${startInfo} to ${endInfo} of ${data.length}`;
+
+              pagination.innerHTML = ""; // Clear existing pagination
+
+              // Calculate the total number of pages
+              const totalPages = Math.ceil(data.length / pageSize);
+              // console.log(data.length + " / " + pageSize + " = " + totalPages);
+              // Create pagination buttons
+              for (let i = 1; i <= totalPages; i++) {
+                // console.log("page making");
+                const button = document.createElement("button");
+                button.textContent = i;
+                button.addEventListener("click", handlePaginationNavigation);
+                pagination.appendChild(button);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     })
     .catch((error) => {
       // Handle any errors that occurred during the request
@@ -257,18 +489,89 @@ table.addEventListener("click", function (event) {
     if (table.rows.length <= 2) {
       alert("You must have at least one row in the table");
     } else {
-      fetch("/removeData", {
-        method: "POST",
-        body: JSON.stringify({
-          pageID: event.target.parentNode.firstChild.className,
-          index: event.target.parentNode.id,
-          page: event.target.parentNode.parentNode.parentNode.className,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      table.deleteRow(parseInt(event.target.parentNode.id) + 1);
+      if (
+        event.target.parentNode.parentNode.parentNode.className == "employees"
+      ) {
+        const terminate = confirm(
+          "Are you sure you want to mark " +
+            event.target.parentNode.querySelector("td[headers='name']")
+              .innerText +
+            " as inactive?"
+        );
+        if (terminate) {
+          fetch("/editData", {
+            method: "POST",
+            body: JSON.stringify({
+              pageID:
+                event.target.parentNode.firstChild.getAttribute("headers"),
+              index: event.target.parentNode.id,
+              page: event.target.parentNode.parentNode.parentNode.className,
+              key: "is_active",
+              newString: "0",
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((response) => {
+            const pageSize = parseInt(
+              document.getElementById("entriesDropdown").value
+            );
+            renderTable(pageSize, 1, 0);
+          });
+        }
+        return;
+      }
+      if (
+        event.target.parentNode.parentNode.parentNode.className == "projects"
+      ) {
+        const terminate = confirm(
+          "Are you sure you want to mark " +
+            event.target.parentNode.querySelector("td[headers='project_name']")
+              .innerText +
+            " as inactive?"
+        );
+        if (terminate) {
+          fetch("/editData", {
+            method: "POST",
+            body: JSON.stringify({
+              pageID:
+                event.target.parentNode.firstChild.getAttribute("headers"),
+              index: event.target.parentNode.id,
+              page: event.target.parentNode.parentNode.parentNode.className,
+              key: "is_ongoing",
+              newString: "0",
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }).then((response) => {
+            const pageSize = parseInt(
+              document.getElementById("entriesDropdown").value
+            );
+            renderTable(pageSize, 1, 0);
+          });
+        }
+        return;
+      }
+      const deleteRow = confirm(
+        "Are you sure you want to delete row " +
+          event.target.parentNode.id +
+          "? This action cannot be undone."
+      );
+      if (deleteRow) {
+        fetch("/removeData", {
+          method: "POST",
+          body: JSON.stringify({
+            pageID: event.target.parentNode.firstChild.getAttribute("headers"),
+            index: event.target.parentNode.id,
+            page: event.target.parentNode.parentNode.parentNode.className,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        table.deleteRow(parseInt(event.target.parentNode.id) + 1);
+      }
     }
   }
 });
@@ -302,30 +605,75 @@ table.addEventListener("mouseover", function () {
     });
 
     cell.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
+      if (event.key === "Enter" && cell.isContentEditable) {
         event.preventDefault();
-        editData();
+        editData("enter");
       }
     });
 
-    cell.addEventListener("blur", () => editData());
+    cell.addEventListener("blur", (event) => {
+      if (cell.isContentEditable) {
+        editData("blur");
+      }
+    });
 
-    function editData() {
-      cell.contentEditable = "false";
-      cell.classList.remove("editing");
-      fetch("/editData", {
-        method: "POST",
-        body: JSON.stringify({
-          pageID: cell.parentNode.firstChild.className,
-          index: cell.parentNode.id,
-          key: cell.className,
-          newString: cell.textContent,
-          page: cell.parentNode.parentNode.parentNode.className,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    function editData(debugstr) {
+      var validateData = validate(cell);
+      if (validateData.bool) {
+        cell.contentEditable = "false";
+        cell.classList.remove("editing");
+        fetch("/editData", {
+          method: "POST",
+          body: JSON.stringify({
+            pageID: cell.parentNode.firstChild.getAttribute("headers"),
+            index: cell.parentNode.id,
+            key: cell.getAttribute("headers"),
+            newString: validateData.data,
+            page: cell.parentNode.parentNode.parentNode.className,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        cell.contentEditable = "false";
+        cell.classList.remove("editing");
+        fetch("/custQuery", {
+          headers: {
+            "Content-Type": "application/json",
+            query:
+              "SELECT " +
+              cell.getAttribute("headers") +
+              " FROM " +
+              cell.parentNode.parentNode.parentNode.className +
+              " WHERE " +
+              cell.parentNode.firstChild.getAttribute("headers") +
+              " = " +
+              cell.parentNode.id,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.text().then((error) => {
+                throw new Error(error);
+              });
+            }
+
+            return response.json();
+          })
+          .then((data) => {
+            alert("Error: " + validateData.err);
+            cell.innerText = data[0][cell.getAttribute("headers")];
+          })
+          .catch((error) => {
+            const errorDiv = document.createElement("div");
+            errorDiv.classList.add("error", "status");
+            errorDiv.setAttribute("role", "alert");
+
+            errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+            table.appendChild(errorDiv);
+          });
+      }
       // location.reload();
     }
   }
@@ -341,7 +689,7 @@ searchInput.addEventListener("keyup", function () {
   //   }
   // });
   const pageSize = parseInt(document.getElementById("entriesDropdown").value);
-  renderTable(pageSize, 1, 0)
+  renderTable(pageSize, 1, 0);
   // const filter = searchInput.value.toUpperCase();
 
   // for (let i = 0; i < rows.length; i++) {
@@ -363,11 +711,11 @@ searchInput.addEventListener("keyup", function () {
 });
 
 // Attach event listeners to each input element
-filterInputs.forEach(input => {
+filterInputs.forEach((input) => {
   input.addEventListener("keyup", function () {
     // console.log("keyup " + index)
     const pageSize = parseInt(document.getElementById("entriesDropdown").value);
-    renderTable(pageSize, 1, 0)
+    renderTable(pageSize, 1, 0);
 
     // // Get the value entered in the filter input
     // const filterValue = input.value.toLowerCase();
@@ -426,6 +774,7 @@ function resizeTable() {
     // Iterate over each row in the column
     for (var j = 0; j < tablerows.length; j++) {
       var cell = tablerows[j].cells[i];
+      // console.log(cell)
       var cellWidth = cell.offsetWidth;
 
       // Check if the cell contains an input field
