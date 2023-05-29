@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS salaries;
 DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS employee_statuses;
 
 -- I made most of the ints UNSIGNED since we won't be dealing with
 -- negative numbers
@@ -19,6 +20,12 @@ CREATE TABLE IF NOT EXISTS roles (
   CONSTRAINT valid_role_name CHECK( role_name RLIKE '^[[a-z]|[A-Z]]+$' )
 );
 
+CREATE TABLE IF NOT EXISTS statuses (
+  status_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  status_name VARCHAR(45) NOT NULL UNIQUE,
+  PRIMARY KEY (status_id),
+  CONSTRAINT valid_status_name CHECK( status_name RLIKE '^[[a-z]|[A-Z]]+$')
+);
 
 -- -----------------------------------------------------
 -- Table employees
@@ -28,13 +35,18 @@ CREATE TABLE IF NOT EXISTS employees (
   hire_date DATE NOT NULL,
   name VARCHAR(45) NOT NULL,
   role INT UNSIGNED NULL, -- changed to NULLable for 1:M partial participation / NULLable FK requirement
-  is_active TINYINT(1) NOT NULL,
+  employee_status INT UNSIGNED NOT NULL,
   address VARCHAR(45) NULL,
   birthdate DATE NOT NULL, -- changed to be NOT NULL for duplicate checks
   PRIMARY KEY (employee_id),
   CONSTRAINT fk_employees_role_types
     FOREIGN KEY (role)
     REFERENCES roles (role_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT fk_employee_statuses
+    FOREIGN KEY (employee_status)
+    REFERENCES statuses (status_id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT not_already_in_table UNIQUE(name,birthdate),
@@ -129,6 +141,14 @@ DESCRIBE employees_projects;
 -- None, data integrity is checked in tables with CHECK statements
 
 -- -------------------- Filling the tables ---------------------------
+INSERT INTO statuses VALUES
+(DEFAULT, "Active"),
+(DEFAULT, "Sick"),
+(DEFAULT, "Medical Leave"),
+(DEFAULT, "Fired"),
+(DEFAULT, "Quit");
+
+
 
 INSERT INTO roles VALUES
 (DEFAULT, "CEO of Beavers for Better"),
@@ -146,7 +166,7 @@ INSERT INTO roles VALUES
 INSERT INTO employees VALUES
 (DEFAULT, '2020-12-31', "Benny Beaverton", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'1990-10-6'),
 (DEFAULT, '2020-12-31', "Blaid Beaverton", (SELECT role_id FROM roles WHERE role_name="Senior Mechanical Engineer"),1,"5551 NW Harrison Blvd",'1992-11-4'),
-(DEFAULT, '2021-3-1', "Oregon Duck", (SELECT role_id FROM roles WHERE role_name="Electric Engineer"),0,"2555 SE Portland Ave",'1990-10-6'),
+(DEFAULT, '2021-3-1', "Oregon Duck", (SELECT role_id FROM roles WHERE role_name="Electric Engineer"),4,"2555 SE Portland Ave",'1990-10-6'),
 (DEFAULT, '2023-1-31', "Roger Smith", (SELECT role_id FROM roles WHERE role_name="Senior Software Engineer"),1,"8750 Rocky Way",'1995-5-5'),
 (DEFAULT, '2023-1-31', "Tweedle Dee", (SELECT role_id FROM roles WHERE role_name="Software Engineer"),1,"1458 Wonderland Way",'1895-5-5'),
 (DEFAULT, '2023-1-31', "Tweedle Dum", (SELECT role_id FROM roles WHERE role_name="Software Engineer"),1,"1458 Wonderland Way",'1895-5-5'),

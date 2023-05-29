@@ -33,7 +33,7 @@ WHERE role_id=%%role_id%%;
 SELECT r.role_id as "role_id", r.role_name, SUM(1) as "number of workers"
 FROM employees as e, roles as r
 WHERE e.role = r.role_id
-AND e.is_active = 1
+AND e.employee_status = 1
 GROUP BY e.role
 UNION
 SELECT r.role_id as "role_id", r.role_name, 0 as "number of workers"
@@ -42,7 +42,7 @@ WHERE r.role_id NOT IN
 (
     SELECT role
     FROM employees
-    WHERE is_active=1
+    WHERE employee_status=1
 );
 
 
@@ -84,13 +84,8 @@ DEFAULT,
 -- refer back to them in the future for any reason
 -- NO DELETE
 
--- We should, however, mark employees as "inactive" if they leave the
--- company
-UPDATE employees SET is_active=0 
-WHERE employee_id=%%employee_id%%;
-
--- or as active if they re-join the company
-UPDATE employees SET is_active=1 
+-- We should, however, be able to mark employees based on their current status
+UPDATE employees SET employee_status=%%employee_status%% 
 WHERE employee_id=%%employee_id%%;
 
 -- We should also allow our admin to modify the other aspects of an employee's data
@@ -98,7 +93,7 @@ UPDATE employees SET
 hire_date=%%hire_date%%, 
 name=%%new_name%%, 
 role=%%role_id%%, 
-is_active=%%is_active%%, 
+employee_status=%%employee_status%%, 
 address=%%address%%, 
 birthdate=%%birthdate%%
 WHERE employee_id=%%employee_id%%;
@@ -135,18 +130,19 @@ SELECT * FROM projects;
 -- Viewing active projects
 SELECT * 
 FROM projects
-WHERE is_active=1; 
+WHERE is_ongoing=1; 
 
 -- Viewing inactive projects
 SELECT * 
 FROM projects
-WHERE is_active=0; 
+WHERE is_ongoing=0; 
 
 -- Viewing all employees whom are working on a project
 -- (and whom are still actively working on said project)
 SELECT name, role 
 FROM employees 
-WHERE is_active=1 
+WHERE employee_status=1
+OR employee_status=2    -- assuming that, if someone is sick, they'll be back soon 
 AND employee_id IN 
   (
   SELECT UNIQUE employee_id 
@@ -193,7 +189,7 @@ SELECT * FROM employees_projects;
 
 -- Viewing what the employee X has been working on
 -- from the date range ST to ED
-SELECT name, role, is_active, project_id, date_of_work, number_hours
+SELECT name, role, employee_status, project_id, date_of_work, number_hours
 FROM employees AS e, employees_projects as ep
 WHERE e.employee_id=%%X%%
 AND date_of_work >= %%ST%%
@@ -232,6 +228,11 @@ AND date_of_work=%%target_day_of_work%%;
 
 
 
+
 -- SELECT * 
 -- FROM roles as r
 -- WHERE r.role_id RLIKE '^[0-9]+$';
+
+
+-- INSERT INTO roles VALUES
+-- (DEFAULT, 11);
