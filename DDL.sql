@@ -15,7 +15,8 @@ DROP TABLE IF EXISTS roles;
 CREATE TABLE IF NOT EXISTS roles (
   role_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   role_name VARCHAR(45) NOT NULL UNIQUE,
-  PRIMARY KEY (role_id)
+  PRIMARY KEY (role_id),
+  CONSTRAINT valid_role_name CHECK( role_name RLIKE '^[[a-z]|[A-Z]]+$' )
 );
 
 
@@ -36,7 +37,14 @@ CREATE TABLE IF NOT EXISTS employees (
     REFERENCES roles (role_id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT already_in_table UNIQUE(name,birthdate)
+  CONSTRAINT not_already_in_table UNIQUE(name,birthdate),
+  CONSTRAINT valid_hire_date CHECK(
+    hire_date NOT RLIKE "^0000-00-00$" -- if an invalid date is entered, date defaults to 0000-00-00
+  ),
+  CONSTRAINT valid_birth_date CHECK (
+    birthdate NOT RLIKE "^0000-00-00$" -- see above
+  ),
+  CONSTRAINT hire_date_after_bday CHECK(birthdate <= hire_date)
 );
 
 
@@ -54,7 +62,10 @@ CREATE TABLE IF NOT EXISTS salaries (
     REFERENCES employees (employee_id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT err_cannot_overide_entry UNIQUE(employee_id,effective_date)
+  CONSTRAINT not_in_table_already UNIQUE(employee_id,effective_date),
+  CONSTRAINT valid_effective_date CHECK (
+    effective_date NOT RLIKE "^0000-00-00$" -- if invalid entry for date, get "0000-00-00"
+  )
 );
 
 
@@ -71,7 +82,14 @@ CREATE TABLE IF NOT EXISTS projects (
   PRIMARY KEY (project_id),
   CONSTRAINT valid_percent_complete CHECK(0 <= percent_completed AND percent_completed <= 100),
   CONSTRAINT start_before_deadline CHECK(start_date <= deadline),
-  CONSTRAINT bool_is_ongoing CHECK(is_ongoing=0 OR is_ongoing=1)
+  CONSTRAINT bool_is_ongoing CHECK(is_ongoing=0 OR is_ongoing=1),
+  CONSTRAINT valid_deadline_date CHECK (
+    deadline NOT RLIKE "^0000-00-00$" -- if invalid entry for date, get "0000-00-00"
+  ),
+  CONSTRAINT valid_start_date CHECK (
+    start_date NOT RLIKE "^0000-00-00$" -- if invalid entry for date, get "0000-00-00"
+  ),
+  CONSTRAINT valid_project_name CHECK( project_name RLIKE '^[[a-z]|[A-Z]]+[0-9]*$' )
 );
 
 
@@ -104,6 +122,11 @@ DESCRIBE salaries;
 DESCRIBE projects;
 DESCRIBE employees_projects;
 
+
+
+-- -------------------- Data Integrity Triggers ---------------------
+
+-- None, data integrity is checked in tables with CHECK statements
 
 -- -------------------- Filling the tables ---------------------------
 
@@ -173,3 +196,9 @@ SELECT * FROM salaries;
 SELECT * FROM roles;
 SELECT * FROM projects;
 SELECT * from employees_projects;
+
+INSERT INTO employees VALUES
+(DEFAULT, '2020-5-10', "Sal sunman", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'2025-5-10');
+
+SELECT * 
+FROM employees;
