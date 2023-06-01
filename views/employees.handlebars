@@ -2,5 +2,5 @@
   {{!-- Create Table for each employee data --}}
   {{> table tableData=atributeInfo headerNames=employeeData fkInfo=fkInfo fkTable=fkTable page="employees"}}
   {{!-- Using the labels from employee data make add form --}}
-  {{> form inputData=atributeInfo headerNames=employeeData title="Add Employee" page="employees"}}
+  {{> form inputData=atributeInfo headerNames=employeeData fkInfo=fkInfo fkTable=fkTable title="Add Employee" page="employees"}}
 </div>

@@ -45,12 +45,17 @@
     <tr>
       {{#each tableData}}
         <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey [Field] ../fkInfo}}">
-          {{lookup ../headerNames [Field]}}</th>
+          {{lookup ../headerNames [Field]}}
+        </th>
         {{!-- <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th> --}}
         {{#if (ifEquals Field ../fkInfo)}}
           {{#with (lookup ../fkTable [Field])}}
-            <th id="{{Field}}" headers={{getReferenceTable ../Field ../../fkInfo}} class="{{Type}} {{Null}} {{Key}} FKname">
-              {{lookup ../../headerNames [Field]}}</th>
+            {{#with name}}
+              <th id="{{Field}}" headers={{getReferenceTable ../../Field ../../../fkInfo}}
+                class="{{Type}} {{Null}} {{Key}} FKname">
+                {{lookup ../../../headerNames [Field]}}
+              </th>
+            {{/with}}
           {{/with}}
         {{/if}}
       {{/each}}
@@ -61,7 +66,9 @@
         <td headers={{Field}}> <input type="text" /> </td>
         {{#if (ifEquals Field ../fkInfo)}}
           {{#with (lookup ../fkTable [Field])}}
-            <td headers={{Field}}> <input type="text" /> </td>
+            {{#with name}}
+              <td headers={{Field}}> <input type="text" /> </td>
+            {{/with}}
           {{/with}}
         {{/if}}
       {{/each}}
