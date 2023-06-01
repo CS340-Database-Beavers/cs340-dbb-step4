@@ -217,8 +217,8 @@ SELECT * FROM roles;
 SELECT * FROM projects;
 SELECT * from employees_projects;
 
-INSERT INTO employees VALUES
-(DEFAULT, '2020-5-10', "Sal sunman", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'2025-5-10');
+-- INSERT INTO employees VALUES
+-- (DEFAULT, '2020-5-10', "Sal sunman", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'2025-5-10');
 
 SELECT * 
 FROM employees;
