@@ -6,29 +6,16 @@
         <option value="25"> 25 </option>
         <option value="50"> 50 </option>
         <option value="100"> 100 </option>
-      </select>
-      per page</label>
+      </select> per page</label>
   </div>
   <div class="datatable-controls d-flex">
-    <button
-      class="btn btn-sm btn-light-bordered"
-      id="filterToggleBtn"
-      style="height: 33.5; width: 33.5; margin-right: 6px;"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        fill="#000000"
-        version="1.1"
-        id="Layer_1"
-        viewBox="0 0 512 512"
-        xml:space="preserve"
-      >
+    <button class="btn btn-sm btn-light-bordered" id="filterToggleBtn"
+      style="height: 33.5; width: 33.5; margin-right: 6px;">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" version="1.1"
+        id="Layer_1" viewBox="0 0 512 512" xml:space="preserve">
         <g>
           <g>
-            <polygon
-              points="222.949,302.964 222.949,512 289.051,467.933 289.051,302.964"
-            />
+            <polygon points="222.949,302.964 222.949,512 289.051,467.933 289.051,302.964" />
           </g>
         </g>
         <g>
@@ -38,32 +25,18 @@
         </g>
         <g>
           <g>
-            <polygon
-              points="19.137,82.627 206.424,269.913 305.576,269.913 492.863,82.627"
-            />
+            <polygon points="19.137,82.627 206.424,269.913 305.576,269.913 492.863,82.627" />
           </g>
         </g>
       </svg>
     </button>
     <label class="form-label">
-      <input
-        id="searchInput"
-        class="form-control form-control-sm"
-        placeholder="Search"
-        type="search"
-        value=""
-      />
+      <input id="searchInput" class="form-control form-control-sm" placeholder="Search" type="search" value="" />
     </label>
     <div class="float-end dropdown">
-      <div
-        class="no-caret"
-        id="datatable-controls-PlayerRatings"
-        aria-expanded="false"
-        title="Actions"
-        style="cursor: pointer; font-size: 20px; line-height: 33.5px; padding-left: 5px; font-weight:900; width: 21px; text-align: center; color: #6c757d;"
-      >
-        ⋮
-      </div>
+      <div class="no-caret" id="datatable-controls-PlayerRatings" aria-expanded="false" title="Actions"
+        style="cursor: pointer; font-size: 20px; line-height: 33.5px; padding-left: 5px; font-weight:900; width: 21px; text-align: center; color: #6c757d;">
+        ⋮ </div>
     </div>
   </div>
 </div>
@@ -71,15 +44,13 @@
   <thead>
     <tr>
       {{#each tableData}}
-        <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey [Field] ../fkInfo}}">{{lookup ../headerNames [Field]}}</th>
+        <th id={{Field}} class="{{Type}} {{Null}} {{Key}} {{hasForeignKey [Field] ../fkInfo}}">
+          {{lookup ../headerNames [Field]}}</th>
         {{!-- <th id={{Field}} class="{{Type}} {{Null}} {{Key}}">{{lookup ../headerNames [Field]}}</th> --}}
         {{#if (ifEquals Field ../fkInfo)}}
           {{#with (lookup ../fkTable [Field])}}
-           <th id="{{Field}}"
-          {{/with}}
-           headers={{getReferenceTable Field ../fkInfo}}
-           {{#with (lookup ../fkTable [Field])}}
-             class="{{Type}} {{Null}} {{Key}} FKname">{{Field}}</th>
+            <th id="{{Field}}" headers={{getReferenceTable ../Field ../../fkInfo}} class="{{Type}} {{Null}} {{Key}} FKname">
+              {{lookup ../../headerNames [Field]}}</th>
           {{/with}}
         {{/if}}
       {{/each}}

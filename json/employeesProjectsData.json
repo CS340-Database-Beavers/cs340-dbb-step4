@@ -1,6 +1,8 @@
 {
   "employee_id": "Employee ID",
-  "project_id": "Project",
+  "name": "Employee Name",
+  "project_id": "Project ID",
+  "project_name": "Project Name",
   "date_of_work": "Date of Work",
   "number_hours": "Hours Worked"
 }

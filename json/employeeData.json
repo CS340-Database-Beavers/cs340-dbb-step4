@@ -4,7 +4,8 @@
   "name": "Name",
   "role": "Role ID",
   "role_name": "Role Name",
-  "is_active": "Active",
+  "employee_status": "Status",
+  "status_name": "Status Name",
   "address": "Address",
   "birthdate": "Birth Date"
 }

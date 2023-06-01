@@ -52,7 +52,7 @@ h1 a {
 
 /* Style the main container for the page */
 .container {
-  max-width: 1080px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -82,11 +82,11 @@ label {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
-  font-size: .710938rem;
+  font-size: 0.710938rem;
 }
 .form-select {
   width: 100%;
-  -moz-padding-start: calc(.75rem - 3px);
+  -moz-padding-start: calc(0.75rem - 3px);
   color: #212529;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -99,26 +99,27 @@ label {
   border: 1px solid #ced4da;
   border-radius: 0.375rem;
   padding: 0.375rem 1.1rem 0.375rem 0.75rem;
-  font-size: .8125rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.5;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   display: block;
 }
 select {
-    word-wrap: normal;
+  word-wrap: normal;
 }
-button, select {
-    text-transform: none;
+button,
+select {
+  text-transform: none;
 }
 .datatable-controls {
   float: right;
 }
 .d-flex {
-  display: flex!important;
+  display: flex !important;
 }
 .align-items-center {
-  align-items: center!important;
+  align-items: center !important;
 }
 .help-icon {
   cursor: pointer;
@@ -139,17 +140,17 @@ button, select {
   cursor: pointer;
 }
 .btn {
-  padding: .375rem .75rem;
-  font-size: .8125rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
   background-color: transparent;
   border-width: 1px;
   border-color: transparent;
-  border-radius: .375rem;
+  border-radius: 0.375rem;
   box-shadow: none; /* Remove the box shadow */
-  opacity: .65;
+  opacity: 0.65;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
@@ -158,9 +159,9 @@ button, select {
 }
 
 .btn-sm {
-  padding: .25rem .5rem;
-  font-size: .710938rem;
-  border-radius: .25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.710938rem;
+  border-radius: 0.25rem;
 }
 
 .btn-light-bordered {
@@ -184,7 +185,6 @@ button, select {
   outline: none; /* Remove the active outline */
 }
 
-
 .datatable-controls input {
   width: 200px;
 }
@@ -192,7 +192,7 @@ button, select {
   min-height: calc(1.5em + 0.5rem + 2px);
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
-  font-size: .710938rem;
+  font-size: 0.710938rem;
 }
 .form-control {
   width: 100%;
@@ -205,22 +205,30 @@ button, select {
   border: 1px solid #ced4da;
   border-radius: 0.375rem;
   padding: 0.375rem 0.75rem;
-  font-size: .8125rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.5;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   display: block;
 }
-[type=search] {
+[type="search"] {
   outline-offset: -2px;
 }
 .float-end {
-  float: right!important;
+  float: right !important;
 }
-.dropup, .dropend, .dropdown, .dropstart, .dropup-center {
+.dropup,
+.dropend,
+.dropdown,
+.dropstart,
+.dropup-center {
   position: relative;
 }
-input, button, select, optgroup, textarea {
+input,
+button,
+select,
+optgroup,
+textarea {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -328,7 +336,6 @@ th:hover {
   content: " 🖉";
 } */
 
-
 .editing {
   position: relative;
   outline: 2px solid #007bff;
@@ -347,7 +354,6 @@ th:hover {
   font-weight: 800;
 }
 
-
 /* Style the form used to add or edit employees */
 form {
   max-width: 600px;
@@ -360,7 +366,7 @@ label {
   margin-bottom: 10px;
 }
 
-.datainput{
+.datainput {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -370,11 +376,11 @@ label {
   border-radius: 4px;
 }
 
-td input{
+td input {
   width: 0px;
 }
 
-.d-hidden{
+.d-hidden {
   display: none;
 }
 
@@ -401,8 +407,6 @@ input[type="submit"] {
 input[type="submit"]:hover {
   background-color: #45a049;
 }
-
-
 
 /* Style the error messages displayed on the form */
 .error {

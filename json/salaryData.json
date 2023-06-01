@@ -2,5 +2,6 @@
   "salary_id": "ID",
   "effective_date": "Effective Date",
   "pay_amount": "Pay",
-  "employee_id": "Employee ID"
+  "employee_id": "Employee ID",
+  "name": "Employee Name"
 }
