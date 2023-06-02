@@ -212,6 +212,9 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
                 for (var key in data[i]) {
                   var newCell = document.createElement("td");
                   newCell.textContent = data[i][key];
+                  if (document.getElementById(key).classList.contains("date")) {
+                    newCell.textContent = newCell.textContent.split("T")[0];
+                  }
                   newCell.setAttribute("headers", key);
                   document
                     .getElementById(key)
