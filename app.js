@@ -15,8 +15,8 @@ require.extensions[".sql"] = async function (module, filename) {
   module.exports = rawSQL.split(";\r\n");
 };
 // Database
-var db = require("./db-connector");
-// var db = require("./db-connector-humberj");
+// var db = require("./db-connector");
+var db = require("./db-connector-humberj");
 var ddl = require("./DDL.sql");
 var dml = require("./DML.sql");
 var employeeData = require("./json/employeeData.json");
@@ -148,7 +148,7 @@ async function getTableFromFK(fkInfo) {
       });
       // console.log(results);
       retVal[fkInfo[i].COLUMN_NAME]["select"] = results;
-      console.log(retVal);
+      // console.log(retVal);
     } catch (error) {
       console.log(error);
       throw error; // Re-throw the error to be caught in the calling code

@@ -23,6 +23,7 @@ const pagination = document.getElementById("pagination");
 const forminputs = document.getElementsByClassName("datainput");
 
 var tableDataLength = 0;
+let activeDropdown = null;
 // ---------Functions---------
 
 function validate(element) {
@@ -235,7 +236,10 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
                     // console.log(fkCell.innerText);
                     // if (fkCell.innerHTML == "") {
                     console.log(fkdata1[i]);
-                    fkCell.innerText = fkdata[data[i][key] - 1][parentCell.id] === undefined ? fkdata1[data[i][key] - 1][parentCell.id] : fkdata[data[i][key] - 1][parentCell.id];
+                    fkCell.innerText =
+                      fkdata[data[i][key] - 1][parentCell.id] === undefined
+                        ? fkdata1[data[i][key] - 1][parentCell.id]
+                        : fkdata[data[i][key] - 1][parentCell.id];
                     // break;
                     // }
                     // }
@@ -585,8 +589,9 @@ table.addEventListener("mouseover", function () {
   ) {
     const cell = cells[i];
     if (
-      cell.classList.contains("ID") ||
-      cell.classList.contains("removeicon")
+      cell.classList.contains("PRI") ||
+      cell.classList.contains("removeicon") ||
+      cell.classList.contains("FKname")
     ) {
       continue;
     }
@@ -600,8 +605,58 @@ table.addEventListener("mouseover", function () {
     });
 
     cell.addEventListener("dblclick", () => {
-      cell.contentEditable = "true";
-      cell.focus();
+      console.log(
+        activeDropdown +
+          " " +
+          !!activeDropdown +
+          " " +
+          (activeDropdown ? activeDropdown.parentNode == cell : null)
+      );
+      if (activeDropdown && activeDropdown.parentNode != cell) {
+        activeDropdown.parentNode.innerText = activeDropdown.value;
+        activeDropdown.remove(); // Remove the previously opened dropdown
+        activeDropdown = null;
+      }
+      if (cell.classList.contains("FK")) {
+        const originalText = cell.innerText;
+        const dropdown = activeDropdown
+          ? activeDropdown.parentNode == cell
+            ? activeDropdown
+            : document.querySelector("select." + cell.headers).cloneNode(true)
+          : document.querySelector("select." + cell.headers).cloneNode(true);
+        // console.log(dropdown);
+        activeDropdown = dropdown; // Set the active dropdown
+        for (let option of dropdown.children) {
+          // console.log(originalText);
+          if (option.value === "") {
+            option.remove();
+          }
+          if (option.value === originalText) {
+            option.selected = "selected";
+            break;
+          }
+        }
+        cell.innerHTML = "";
+        cell.appendChild(dropdown);
+        dropdown.addEventListener("change", function () {
+          const selectedOption = this.value; // Get the selected option
+
+          // Store the selected option as text in the cell
+          cell.innerText = selectedOption;
+
+          activeDropdown = null; // Reset the active dropdown
+
+          // Remove the dropdown
+          this.remove();
+          editData("dropdown");
+        });
+        dropdown.focus();
+        // console.log("here");
+        activeDropdown = dropdown; // Set the active dropdown
+      } else {
+        cell.contentEditable = "true";
+        cell.focus();
+      }
     });
 
     cell.addEventListener("keydown", (event) => {
@@ -618,6 +673,7 @@ table.addEventListener("mouseover", function () {
     });
 
     function editData(debugstr) {
+      console.log(debugstr);
       var validateData = validate(cell);
       if (validateData.bool) {
         cell.contentEditable = "false";

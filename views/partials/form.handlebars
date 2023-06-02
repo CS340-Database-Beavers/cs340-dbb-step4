@@ -5,7 +5,8 @@
     {{#if (ifEquals Field ../fkInfo)}}
       {{#with (lookup ../fkTable [Field])}}
         {{#with name}}
-          <select name={{Field}} class="{{Type}} {{Null}} {{Key}} datainput">
+          <select name={{Field}} class="{{Type}} {{Null}} {{Key}} {{../../Field}} FKinput datainput">
+            <option value=""></option>
             {{#each ../select}}
               <option value={{#with ../../id}}{{lookup .. [Field]}}{{/with}}>{{lookup . ../Field}}</option>
             {{/each}}
