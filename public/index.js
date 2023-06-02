@@ -214,6 +214,13 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
                   newCell.textContent = data[i][key];
                   if (document.getElementById(key).classList.contains("date")) {
                     newCell.textContent = newCell.textContent.split("T")[0];
+                  } else if (
+                    document.getElementById(key).classList.contains("datetime")
+                  ) {
+                    newCell.textContent =
+                      newCell.textContent.split("T")[0] +
+                      " " +
+                      newCell.textContent.split("T")[1].split(".")[0];
                   }
                   newCell.setAttribute("headers", key);
                   document
