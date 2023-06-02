@@ -520,8 +520,8 @@ table.addEventListener("click", function (event) {
                 event.target.parentNode.firstChild.getAttribute("headers"),
               index: event.target.parentNode.id,
               page: event.target.parentNode.parentNode.parentNode.className,
-              key: "is_active",
-              newString: "0",
+              key: "employee_status",
+              newString: "4",
             }),
             headers: {
               "Content-Type": "application/json",
@@ -659,6 +659,10 @@ table.addEventListener("mouseover", function () {
           // Remove the dropdown
           this.remove();
           editData("dropdown");
+          const pageSize = parseInt(
+            document.getElementById("entriesDropdown").value
+          );
+          renderTable(pageSize, 1, 0);
         });
         dropdown.focus();
         // console.log("here");
