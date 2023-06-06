@@ -80,6 +80,22 @@ CREATE TABLE IF NOT EXISTS salaries (
   )
 );
 
+-- assuming employees are paid at the end of the month,
+-- we should only allow salary adjustments to be changed within the
+-- current month if we want to keep a valid record of each employee's
+-- earnings history (otherwise, modifying previous month's salaries would change 
+-- our results when calculating an employee's earnings history)
+DROP TRIGGER IF EXISTS delete_within_the_month;
+DELIMITER $$
+CREATE TRIGGER delete_within_the_month
+BEFORE DELETE ON salaries
+  FOR EACH ROW 
+    BEGIN
+      IF YEAR(OLD.effective_date)*12 + MONTH(OLD.effective_date) < YEAR(CURRENT_DATE())*12 + MONTH(CURRENT_DATE()) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'err: cannot delete a salary outside current month';
+      END IF;
+    END; $$
+DELIMITER ;
 
 -- -----------------------------------------------------
 -- Table projects

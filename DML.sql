@@ -111,13 +111,21 @@ FROM salaries;
 INSERT INTO salaries VALUES
 (DEFAULT,%%effective_date%%, %%ammount%%, %%employee_id%%);
 
--- We don't want to have ability to UPDATE salaries; this would make
--- the admin unable to track an employee's true salary history
--- NO UPDATE
+-- We want to have the ability to DELETE salaries in a *very*
+-- limited capacity to ensure all employees' salary histories are
+-- accurate. Thus, we allow deletes here, but the TRIGGER
+-- "delete_within_the_month" limits what can be deleted. See DDL.sql
+-- for more information on this.
+-- Essentially, you should be deleteing salaries with incorrect info
+-- by the end of the month
+DELETE FROM salaries
+WHERE employee_id=%%employee_id%% 
+AND effective_date=%%effective_date%%;
 
--- Under the same logic, we don't want to be able to DELETE salaries,
+
+-- Under the same logic, we don't want to be able to UPDATE salaries,
 -- as this would result in the same inability to track salary history
--- NO DELETE
+-- NO UPDATE
 
 
 
