@@ -114,7 +114,7 @@ INSERT INTO salaries VALUES
 -- We want to have the ability to DELETE salaries in a *very*
 -- limited capacity to ensure all employees' salary histories are
 -- accurate. Thus, we allow deletes here, but the TRIGGER
--- "delete_within_the_month" limits what can be deleted. See DDL.sql
+-- "no_delete_past_salary" limits what can be deleted. See DDL.sql
 -- for more information on this.
 -- Essentially, you should be deleteing salaries with incorrect info
 -- by the end of the month
