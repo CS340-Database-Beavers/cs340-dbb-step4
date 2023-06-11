@@ -24,9 +24,16 @@ INSERT INTO roles VALUES
 UPDATE roles SET role_name=%%role_name%%
 WHERE role_id=%%role_id%%;
 
--- Deleting a role might cause problems since other data depends on it
--- even if nobody uses the role now, that may not be the case in the future...
--- NO DELETE
+-- We want to have the ability to DELETE roles in a *very*
+-- limited capacity to ensure all employees', active and inactive,
+-- have a valid role. 
+-- Thus, we allow deletes here, but the TRIGGER
+-- "employee_has_role" limits what can be deleted. See DDL.sql
+-- for more information on this.
+-- Essentially, should only be deleteing roles which are not associated
+-- with ANY employee
+DELETE FROM roles
+WHERE role_id=%%role_id%%;
 
 -- Retrieve the number of working employees for each role
 -- Useful for seeing the skill areas a company may need to fill/cut
