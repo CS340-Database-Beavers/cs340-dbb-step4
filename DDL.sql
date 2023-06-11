@@ -80,22 +80,7 @@ CREATE TABLE IF NOT EXISTS salaries (
   )
 );
 
--- assuming employees are paid at the end of the month,
--- we should only allow salary adjustments to be changed within the
--- current month if we want to keep a valid record of each employee's
--- earnings history (otherwise, modifying previous month's salaries would change 
--- our results when calculating an employee's earnings history)
-DROP TRIGGER IF EXISTS no_delete_past_salary;
-DELIMITER $$
-CREATE TRIGGER no_delete_past_salary
-BEFORE DELETE ON salaries
-  FOR EACH ROW 
-    BEGIN
-      IF YEAR(OLD.effective_date)*12 + MONTH(OLD.effective_date) < YEAR(CURRENT_DATE())*12 + MONTH(CURRENT_DATE()) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'err: cannot delete a past salary';
-      END IF;
-    END; $$
-DELIMITER ;
+
 
 -- -----------------------------------------------------
 -- Table projects
@@ -154,7 +139,44 @@ DESCRIBE employees_projects;
 
 -- -------------------- Data Integrity Triggers ---------------------
 
--- None, data integrity is checked in tables with CHECK statements
+-- assuming employees are paid at the end of the month,
+-- we should only allow salary adjustments to be changed within the
+-- current month if we want to keep a valid record of each employee's
+-- earnings history (otherwise, modifying previous month's salaries would change 
+-- our results when calculating an employee's earnings history)
+DROP TRIGGER IF EXISTS no_delete_past_salary;
+DELIMITER $$
+CREATE TRIGGER no_delete_past_salary
+BEFORE DELETE ON salaries
+  FOR EACH ROW 
+    BEGIN
+      IF YEAR(OLD.effective_date)*12 + MONTH(OLD.effective_date) < YEAR(CURRENT_DATE())*12 + MONTH(CURRENT_DATE()) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'err: cannot delete a past salary';
+      END IF;
+    END; $$
+DELIMITER ;
+
+
+
+-- it'd be nice to be able to delete roles added in error,
+-- at the same time, we don't want to give the user the ability to
+-- delete roles which are assigned to any employee - otherwise, we
+-- would be creating corrupt data.
+-- This check ensures that any role that is deleted is not already
+-- assigned to an employee.
+DROP TRIGGER IF EXISTS employee_has_role;
+DELIMITER $$
+CREATE TRIGGER employee_has_role
+BEFORE DELETE ON roles
+  FOR EACH ROW 
+    BEGIN
+      IF OLD.role_id IN (SELECT role FROM employees) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'err: cannot delete a role which an active or inactive employee possesses';
+      END IF;
+    END; $$
+DELIMITER ;
+
+
 
 -- -------------------- Filling the tables ---------------------------
 INSERT INTO statuses VALUES
