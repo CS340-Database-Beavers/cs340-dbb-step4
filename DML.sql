@@ -231,7 +231,8 @@ AND date_of_work=%%target_day_of_work%%;
 -- the admin should have the ability to DELETE that information
 DELETE FROM employees_projects
 WHERE employee_id=%%bad_employee%% 
-AND date_of_work=%%target_day_of_work%%;
+AND date_of_work=%%target_day_of_work%%
+AND project_id = %%project_not_worked_on%%;
 
 
 
