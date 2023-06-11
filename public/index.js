@@ -510,7 +510,7 @@ table.addEventListener("click", function (event) {
           "Are you sure you want to mark " +
             event.target.parentNode.querySelector("td[headers='name']")
               .innerText +
-            " as inactive?"
+            " as inactive? You cannot delete old employees, only mark them as inactive."
         );
         if (terminate) {
           fetch("/editData", {
