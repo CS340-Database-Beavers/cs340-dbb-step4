@@ -594,7 +594,7 @@ table.addEventListener("mouseover", function () {
   var cells = tbody.querySelectorAll("td");
   for (
     let i = 0;
-    i < 8 * parseInt(document.getElementById("entriesDropdown").value);
+    i < cells.length; //8 * parseInt(document.getElementById("entriesDropdown").value);
     i++
   ) {
     const cell = cells[i];
@@ -615,13 +615,13 @@ table.addEventListener("mouseover", function () {
     });
 
     cell.addEventListener("dblclick", () => {
-      console.log(
-        activeDropdown +
-          " " +
-          !!activeDropdown +
-          " " +
-          (activeDropdown ? activeDropdown.parentNode == cell : null)
-      );
+      // console.log(
+      //   activeDropdown +
+      //     " " +
+      //     !!activeDropdown +
+      //     " " +
+      //     (activeDropdown ? activeDropdown.parentNode == cell : null)
+      // );
       if (activeDropdown && activeDropdown.parentNode != cell) {
         activeDropdown.parentNode.innerText = activeDropdown.value;
         activeDropdown.remove(); // Remove the previously opened dropdown
