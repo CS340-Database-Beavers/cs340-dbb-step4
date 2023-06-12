@@ -640,7 +640,7 @@ table.addEventListener("click", function (event) {
               errorDiv.setAttribute("role", "alert");
 
               errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
-              table.appendChild(errorDiv);
+              form.appendChild(errorDiv);
             });
         }
         return;
@@ -783,6 +783,52 @@ table.addEventListener("mouseover", function () {
     function editData(debugstr) {
       console.log(debugstr);
       var validateData = validate(cell);
+      if (
+        cell.parentNode.parentNode.parentNode.className == "employees_projects"
+      ) {
+        fetch("/custQuery", {
+          headers: {
+            "Content-Type": "application/json",
+            query:
+              "UPDATE " +
+              cell.parentNode.parentNode.parentNode.className +
+              " SET " +
+              cell.getAttribute("headers") +
+              "='" +
+              validateData.data +
+              "' WHERE " +
+              cell.parentNode.children[0].getAttribute("headers") +
+              "=" +
+              cell.parentNode.children[0].innerText +
+              " AND " +
+              cell.parentNode.children[2].getAttribute("headers") +
+              "=" +
+              cell.parentNode.children[2].innerText +
+              " AND " +
+              cell.parentNode.children[4].getAttribute("headers") +
+              "='" +
+              cell.parentNode.children[4].innerText +
+              "';",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.text().then((error) => {
+                throw new Error(error);
+              });
+            }
+          })
+          .catch((error) => {
+            const errorDiv = document.createElement("div");
+            errorDiv.classList.add("error", "status");
+            errorDiv.setAttribute("role", "alert");
+
+            errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+            form.appendChild(errorDiv);
+          });
+
+        return;
+      }
       if (validateData.bool) {
         cell.contentEditable = "false";
         cell.classList.remove("editing");
