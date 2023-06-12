@@ -260,11 +260,13 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
                     // for (var j = 1; j < fkCells.length; j++) {
                     // console.log(fkCell.innerText);
                     // if (fkCell.innerHTML == "") {
-                    // console.log(fkdata1[i]);
-                    console.log(data[i]);
+                    // console.log(fkdata);
+
                     var result = findObjectByFirstKey(fkdata, data[i][key]);
                     var result1 = findObjectByFirstKey(fkdata1, data[i][key]);
+                    // console.log(result + " " + data[i][key]);
                     fkCell.innerText =
+                      result === undefined ||
                       result[parentCell.id] === undefined
                         ? result1[parentCell.id]
                         : result[parentCell.id];
@@ -601,8 +603,24 @@ table.addEventListener("click", function (event) {
           headers: {
             "Content-Type": "application/json",
           },
-        });
-        table.deleteRow(parseInt(event.target.parentNode.id) + 1);
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.text().then((error) => {
+                throw new Error(error);
+              });
+            }
+
+            table.deleteRow(parseInt(event.target.parentNode.rowIndex));
+          })
+          .catch((error) => {
+            const errorDiv = document.createElement("div");
+            errorDiv.classList.add("error", "status");
+            errorDiv.setAttribute("role", "alert");
+
+            errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+            form.appendChild(errorDiv);
+          });
       }
     }
   }
