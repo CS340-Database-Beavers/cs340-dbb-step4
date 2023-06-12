@@ -587,6 +587,64 @@ table.addEventListener("click", function (event) {
         }
         return;
       }
+      if (
+        event.target.parentNode.parentNode.parentNode.className ==
+        "employees_projects"
+      ) {
+        const terminate = confirm(
+          "Are you sure you want to delete the hours work by " +
+            event.target.parentNode.querySelector("td[headers='name']")
+              .innerText +
+            " on the project " +
+            event.target.parentNode.querySelector("td[headers='project_name']")
+              .innerText +
+            " on " +
+            event.target.parentNode.querySelector("td[headers='date_of_work']")
+              .innerText +
+            "? This action cannot be undone."
+        );
+        if (terminate) {
+          fetch("/custQuery", {
+            headers: {
+              "Content-Type": "application/json",
+              query:
+                "DELETE FROM " +
+                event.target.parentNode.parentNode.parentNode.className +
+                " WHERE " +
+                event.target.parentNode.children[0].getAttribute("headers") +
+                "=" +
+                event.target.parentNode.children[0].innerText +
+                " AND " +
+                event.target.parentNode.children[2].getAttribute("headers") +
+                "=" +
+                event.target.parentNode.children[2].innerText +
+                " AND " +
+                event.target.parentNode.children[4].getAttribute("headers") +
+                "='" +
+                event.target.parentNode.children[4].innerText +
+                "';",
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                return response.text().then((error) => {
+                  throw new Error(error);
+                });
+              }
+
+              table.deleteRow(parseInt(event.target.parentNode.rowIndex));
+            })
+            .catch((error) => {
+              const errorDiv = document.createElement("div");
+              errorDiv.classList.add("error", "status");
+              errorDiv.setAttribute("role", "alert");
+
+              errorDiv.innerHTML = "<h3>❌ Error: " + error.message + "</h3>";
+              table.appendChild(errorDiv);
+            });
+        }
+        return;
+      }
       const deleteRow = confirm(
         "Are you sure you want to delete row " +
           event.target.parentNode.id +
