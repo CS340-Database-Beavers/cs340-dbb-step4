@@ -242,13 +242,59 @@ AND date_of_work=%%target_day_of_work%%
 AND project_id = %%project_not_worked_on%%;
 
 
+-------------------------- Table Sorting Queries --------------------------
+-- Roles
+SELECT * FROM roles ORDER BY role_id ASC;
+SELECT * FROM roles ORDER BY role_id DESC;
+SELECT * FROM roles ORDER BY role_name ASC;
+SELECT * FROM roles ORDER BY role_name DESC;
 
+-- Employees
+SELECT * FROM employees ORDER BY employee_id ASC;
+SELECT * FROM employees ORDER BY employee_id DESC;
+SELECT * FROM employees ORDER BY hire_date ASC;
+SELECT * FROM employees ORDER BY hire_date DESC;
+SELECT * FROM employees ORDER BY name ASC;
+SELECT * FROM employees ORDER BY name DESC;
+SELECT * FROM employees ORDER BY role ASC;
+SELECT * FROM employees ORDER BY role DESC;
+SELECT * FROM employees ORDER BY employee_status ASC;
+SELECT * FROM employees ORDER BY employee_status DESC;
+SELECT * FROM employees ORDER BY address ASC;
+SELECT * FROM employees ORDER BY address DESC;
+SELECT * FROM employees ORDER BY birthdate ASC;
+SELECT * FROM employees ORDER BY birthdate DESC;
 
+-- Projects
+SELECT * FROM projects ORDER BY project_id ASC;
+SELECT * FROM projects ORDER BY project_id DESC;
+SELECT * FROM projects ORDER BY is_ongoing ASC;
+SELECT * FROM projects ORDER BY is_ongoing DESC;
+SELECT * FROM projects ORDER BY percent_completed ASC;
+SELECT * FROM projects ORDER BY percent_completed DESC;
+SELECT * FROM projects ORDER BY deadline ASC;
+SELECT * FROM projects ORDER BY deadline DESC;
+SELECT * FROM projects ORDER BY start_date ASC;
+SELECT * FROM projects ORDER BY start_date DESC;
+SELECT * FROM projects ORDER BY project_name ASC;
+SELECT * FROM projects ORDER BY project_name DESC;
 
--- SELECT * 
--- FROM roles as r
--- WHERE r.role_id RLIKE '^[0-9]+$';
+-- employees_projects
+SELECT * FROM employees_projects ORDER BY employee_id ASC;
+SELECT * FROM employees_projects ORDER BY employee_id DESC;
+SELECT * FROM employees_projects ORDER BY project_id ASC;
+SELECT * FROM employees_projects ORDER BY project_id DESC;
+SELECT * FROM employees_projects ORDER BY date_of_work ASC;
+SELECT * FROM employees_projects ORDER BY date_of_work DESC;
+SELECT * FROM employees_projects ORDER BY number_hours ASC;
+SELECT * FROM employees_projects ORDER BY number_hours DESC;
 
-
--- INSERT INTO roles VALUES
--- (DEFAULT, 11);
+--salaries
+SELECT * FROM salaries ORDER BY salary_id ASC;
+SELECT * FROM salaries ORDER BY salary_id DESC;
+SELECT * FROM salaries ORDER BY effective_date ASC;
+SELECT * FROM salaries ORDER BY effective_date DESC;
+SELECT * FROM salaries ORDER BY pay_amount ASC;
+SELECT * FROM salaries ORDER BY pay_amount DESC;
+SELECT * FROM salaries ORDER BY employee_id ASC;
+SELECT * FROM salaries ORDER BY employee_id DESC;
