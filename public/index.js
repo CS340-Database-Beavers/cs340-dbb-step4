@@ -180,8 +180,20 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
               ? "projects"
               : document
                   .getElementsByClassName("FKname")[1]
+                  .getAttribute("headers")
+                  .includes("name")
+              ? "projects"
+              : document
+                  .getElementsByClassName("FKname")[1]
                   .getAttribute("headers");
-          console.log(document.getElementsByClassName("FKname")[1]);
+          // console.log(
+          //   document.getElementsByClassName("FKname")[1] === undefined
+          //     ? "projects"
+          //     : document
+          //         .getElementsByClassName("FKname")[1]
+          //         .getAttribute("headers")
+          //         .includes("name")
+          // );
           fetch("/custQuery", {
             headers: {
               "Content-Type": "application/json",
