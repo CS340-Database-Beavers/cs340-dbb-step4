@@ -13,6 +13,8 @@
           </select>
         {{/with}}
       {{/with}}
+    {{else if (isEquals Type "date")}}
+      <input type="date" name={{Field}} class="{{Type}} {{Null}} {{Key}} datainput" />
     {{else}}
       <input type="text" name={{Field}} class="{{Type}} {{Null}} {{Key}} datainput" />
     {{/if}}

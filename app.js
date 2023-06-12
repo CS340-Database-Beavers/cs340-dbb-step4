@@ -47,6 +47,9 @@ const hbs = exphbs.create({
       );
       return matchingForeignKey ? true : false;
     },
+    isEquals: function (x, y) {
+      return x === y ? true : false;
+    },
     getReferenceTable: function (columnName, fkInfo) {
       const matchingForeignKey = fkInfo.find(
         (fk) => fk.COLUMN_NAME === columnName
