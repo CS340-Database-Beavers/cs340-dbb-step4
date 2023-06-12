@@ -26,6 +26,9 @@ var tableDataLength = 0;
 let activeDropdown = null;
 // ---------Functions---------
 
+const findObjectByFirstKey = (array, value) =>
+  array.find((obj) => obj[Object.keys(obj)[0]] === value);
+
 function validate(element) {
   // console.log(element.value);
   if (
@@ -257,11 +260,14 @@ function renderTable(pageSize, currentPage, sortIndex, ascending = true) {
                     // for (var j = 1; j < fkCells.length; j++) {
                     // console.log(fkCell.innerText);
                     // if (fkCell.innerHTML == "") {
-                    console.log(fkdata1[i]);
+                    // console.log(fkdata1[i]);
+                    console.log(data[i]);
+                    var result = findObjectByFirstKey(fkdata, data[i][key]);
+                    var result1 = findObjectByFirstKey(fkdata1, data[i][key]);
                     fkCell.innerText =
-                      fkdata[data[i][key] - 1][parentCell.id] === undefined
-                        ? fkdata1[data[i][key] - 1][parentCell.id]
-                        : fkdata[data[i][key] - 1][parentCell.id];
+                      result[parentCell.id] === undefined
+                        ? result1[parentCell.id]
+                        : result[parentCell.id];
                     // break;
                     // }
                     // }
