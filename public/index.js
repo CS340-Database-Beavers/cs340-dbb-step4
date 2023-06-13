@@ -955,49 +955,49 @@ document.addEventListener("DOMContentLoaded", function () {
   var overlay = document.querySelector(".overlay");
   var allInfo = {
     employees:
-      "CREATE: At the bottom of this page, there is a form that you can use to create a new employee. Fields marked with an astrisk (*) are required (cannot be NULL). " +
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new employee. Fields marked with an asterisk (*) are required (cannot be NULL). " +
       "If ID is left blank, it will auto increment, if Hire Date is left blank it will default to today.\n\n" +
-      "READ: Clicking the headers will toggle between sorting ascending, desceding, and by default. " +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
       "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
-      "You can change the number of enteries per page at the top left, or flip through the pages at the botton left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
       "UPDATE: You can double click to edit all editable values (primary keys are not editable). Editing Foreign keys prompts a dropdown selection. " +
       "Invalid edits will provide an error message at the bottom of the page will force you to try again.\n\n" +
-      "DELETE: There is no reason to delete employees due to record keeping, so the delete button simply marks an employee wiht status 4 (fired).",
+      "DELETE: There is no reason to delete employees due to record keeping, so the delete button simply marks an employee with status 4 (fired).",
     projects:
-      "CREATE: At the bottom of this page, there is a form that you can use to create a new project. Fields marked with an astrisk (*) are required (cannot be NULL). " +
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new project. Fields marked with an asterisk (*) are required (cannot be NULL). " +
       "If ID is left blank, it will auto increment, if Start Date is left blank it will default to today.\n\n" +
-      "READ: Clicking the headers will toggle between sorting ascending, desceding, and by default. " +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
       "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
-      "You can change the number of enteries per page at the top left, or flip through the pages at the botton left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
       "UPDATE: You can double click to edit all editable values (primary keys are not editable). Editing Foreign keys prompts a dropdown selection. " +
       "Invalid edits will provide an error message at the bottom of the page will force you to try again.\n\n" +
       "DELETE: There is no reason to delete projects due to record keeping, so the delete button simply edits 'is Ongoing' to 0.",
     employees_projects:
       "CREATE: At the bottom of this page, there is a form that you can use to create a new employee project. All fields are required. " +
       "If Date of Work is left blank it will default to today.\n\n" +
-      "READ: Clicking the headers will toggle between sorting ascending, desceding, and by default. " +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
       "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
-      "You can change the number of enteries per page at the top left, or flip through the pages at the botton left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
       "UPDATE: You can double click to edit all editable values. Primary keys are not editable. As a result, only Hours Worked is editable." +
-      "Invalid edits will provide an error message at the bottom of the page will force you to try again. Hours Worked is contrained to an integer 0 or more and 24 or less.\n\n" +
+      "Invalid edits will provide an error message at the bottom of the page will force you to try again. Hours Worked is contained to an integer 0 or more and 24 or less.\n\n" +
       "DELETE: Clicking the trash can will delete an entry from the table. This cannot be undone.",
     salaries:
       "CREATE: At the bottom of this page, there is a form that you can use to create a new employee specific salary. All fields except for ID are required, as ID will auto increment. " +
-      "If Effectiv Date is left blank it will default to today.\n\n" +
-      "READ: Clicking the headers will toggle between sorting ascending, desceding, and by default. " +
+      "If Effective Date is left blank it will default to today.\n\n" +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
       "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
-      "You can change the number of enteries per page at the top left, or flip through the pages at the botton left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
       "UPDATE: You can double click to edit all editable values (primary keys are not editable). Editing Foreign keys prompts a dropdown selection. " +
       "Invalid edits will provide an error message at the bottom of the page will force you to try again.\n\n" +
       "DELETE: Clicking the trash can will delete an entry from the table. This cannot be undone. Errors Deleting will show in an error message at the bottom of the page.",
     roles:
       "CREATE: At the bottom of this page, there is a form that you can use to create a new employee role. Role name is required, but ID is optional as ID will auto increment. " +
-      "READ: Clicking the headers will toggle between sorting ascending, desceding, and by default. " +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
       "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
-      "You can change the number of enteries per page at the top left, or flip through the pages at the botton left. There is currently a known issue where pagination breaks sorting.\n\n" +
-      "UPDATE: You can double click to edit role naems. Primary keys are not editable.\n\n" +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "UPDATE: You can double click to edit role names. Primary keys are not editable.\n\n" +
       "DELETE: Clicking the trash can will delete an entry from the table. This cannot be undone. Errors deleting will show in an error message at the bottom of the page. " +
-      "Deleting a role with that is assignmed to at least one an employee will throw an error and will not result in a deletion.",
+      "Deleting a role with that is assigned to at least one an employee will throw an error and will not result in a deletion.",
   };
 
   helpIcon.addEventListener("click", function () {
