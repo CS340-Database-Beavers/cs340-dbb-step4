@@ -174,9 +174,13 @@ AND employee_id IN
 INSERT INTO projects VALUES
 (DEFAULT, 1, 0, %%deadline%%, %%start_date%%, %%project_name%%);
 
--- We want to be able to refer back to previous projects for analytics,
--- so we shouldn't DELETE projects
--- NO DELETE
+-- In the case where a project is added in error, or a project is 
+-- scrapped before it even gets going, the admin should have the 
+-- ability to delete said project.
+-- Thus, deletion is allowed. See "project_dependancy" in DDL.sql for
+-- more details.
+DELETE FROM projects
+WHERE project_id=%%project_id%%;
 
 -- Instead, as with employees, we should mark projects as inactive
 UPDATE projects SET is_ongoing=0

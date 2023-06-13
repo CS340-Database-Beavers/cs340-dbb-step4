@@ -198,6 +198,27 @@ DELIMITER ;
 
 
 
+-- it'd be nice to be able to delete projects added in error,
+-- or that will never be worked on due to being scrapped before they start 
+-- at the same time, we don't want to give the user the ability to
+-- delete projects which are connected to other pieces of data - 
+-- otherwise, we could create corrupt data.
+-- This check ensures that an project that is deleted is not
+-- found within employee_projects.
+DROP TRIGGER IF EXISTS project_dependancy;
+DELIMITER $$
+CREATE TRIGGER project_dependancy
+BEFORE DELETE ON projects
+  FOR EACH ROW 
+    BEGIN
+      IF OLD.project_id IN (SELECT project_id FROM employees_projects) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'err: cannot delete a project that has already been worked on.';
+      END IF;
+    END; $$
+DELIMITER ;
+
+
+
 -- -------------------- Filling the tables ---------------------------
 INSERT INTO statuses VALUES
 (DEFAULT, "Active"),
@@ -277,18 +298,3 @@ SELECT * from employees_projects;
 
 -- INSERT INTO employees VALUES
 -- (DEFAULT, '2020-5-10', "Sal sunman", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'2025-5-10');
-
-SELECT * 
-FROM employees;
-
-DELETE FROM employees
-WHERE employee_id=1;
-
-SELECT * 
-FROM employees;
-
-DELETE FROM employees
-WHERE employee_id=7;
-
-SELECT * 
-FROM employees;
