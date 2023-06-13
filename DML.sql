@@ -87,9 +87,14 @@ DEFAULT,
 %%birthdate%%
 );
 
--- We shouldn't be taking employees out of the DB, in case we need to
--- refer back to them in the future for any reason
--- NO DELETE
+-- Sometimes an admin might add an employee in error, or a potential 
+-- candidate who they thought would be joining the company actually
+-- won't be coming on board the company. 
+-- In these cases ONLY, it should be possible to delete an employee
+-- Thus, deletion is allowed, but in a small capacity. 
+-- See "employee_dependancy" in DDL.sql
+DELETE FROM employees
+WHERE employee_id=%%employee_id%%;
 
 -- We should, however, be able to mark employees based on their current status
 UPDATE employees SET employee_status=%%employee_status%% 

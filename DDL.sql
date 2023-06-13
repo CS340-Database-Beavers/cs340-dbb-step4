@@ -178,6 +178,26 @@ DELIMITER ;
 
 
 
+-- it'd be nice to be able to delete employees added in error,
+-- at the same time, we don't want to give the user the ability to
+-- delete employees which are connected to other pieces of data - 
+-- otherwise, we could create corrupt data.
+-- This check ensures that an employee that is deleted is not
+-- connected to any other piece of data.
+DROP TRIGGER IF EXISTS employee_dependancy;
+DELIMITER $$
+CREATE TRIGGER employee_dependancy
+BEFORE DELETE ON employees
+  FOR EACH ROW 
+    BEGIN
+      IF OLD.employee_id IN (SELECT employee_id FROM salaries) OR OLD.employee_id IN (SELECT employee_id FROM employees_projects) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'err: cannot delete an employee who is referenced elsewhere in the database.';
+      END IF;
+    END; $$
+DELIMITER ;
+
+
+
 -- -------------------- Filling the tables ---------------------------
 INSERT INTO statuses VALUES
 (DEFAULT, "Active"),
@@ -257,6 +277,18 @@ SELECT * from employees_projects;
 
 -- INSERT INTO employees VALUES
 -- (DEFAULT, '2020-5-10', "Sal sunman", (SELECT role_id FROM roles WHERE role_name="CEO of Beavers for Better"),1,"5551 NW Harrison Blvd",'2025-5-10');
+
+SELECT * 
+FROM employees;
+
+DELETE FROM employees
+WHERE employee_id=1;
+
+SELECT * 
+FROM employees;
+
+DELETE FROM employees
+WHERE employee_id=7;
 
 SELECT * 
 FROM employees;
