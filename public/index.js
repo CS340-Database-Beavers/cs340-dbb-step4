@@ -694,8 +694,7 @@ table.addEventListener("mouseover", function () {
     const cell = cells[i];
     if (
       cell.classList.contains("PRI") ||
-      cell.classList.contains("removeicon") ||
-      cell.classList.contains("FKname")
+      cell.classList.contains("removeicon")
     ) {
       continue;
     }
@@ -758,6 +757,51 @@ table.addEventListener("mouseover", function () {
           );
           renderTable(pageSize, 1, 0);
         });
+        dropdown.focus();
+        // console.log("here");
+        activeDropdown = dropdown; // Set the active dropdown
+      } else if (cell.classList.contains("FKname")) {
+        const originalText = cell.previousSibling.innerText;
+        const dropdown = activeDropdown
+          ? activeDropdown.parentNode == cell
+            ? activeDropdown
+            : document
+                .querySelector("select." + cell.previousSibling.headers)
+                .cloneNode(true)
+          : document
+              .querySelector("select." + cell.previousSibling.headers)
+              .cloneNode(true);
+        // console.log(dropdown);
+        activeDropdown = dropdown; // Set the active dropdown
+        for (let option of dropdown.children) {
+          // console.log(originalText);
+          if (option.value === "") {
+            option.remove();
+          }
+          if (option.value === originalText) {
+            option.selected = "selected";
+            break;
+          }
+        }
+        cell.innerHTML = "";
+        cell.appendChild(dropdown);
+        dropdown.addEventListener("change", function () {
+          const selectedOption = this.value; // Get the selected option
+
+          // Store the selected option as text in the cell
+          cell.innerText = selectedOption;
+
+          activeDropdown = null; // Reset the active dropdown
+
+          // Remove the dropdown
+          this.remove();
+          editData("dropdown");
+          const pageSize = parseInt(
+            document.getElementById("entriesDropdown").value
+          );
+          renderTable(pageSize, 1, 0);
+        });
+
         dropdown.focus();
         // console.log("here");
         activeDropdown = dropdown; // Set the active dropdown
@@ -838,6 +882,23 @@ table.addEventListener("mouseover", function () {
             pageID: cell.parentNode.firstChild.getAttribute("headers"),
             index: cell.parentNode.id,
             key: cell.getAttribute("headers"),
+            newString: validateData.data,
+            page: cell.parentNode.parentNode.parentNode.className,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+      if (cell.classList.contains("FKname") || validateData.bool) {
+        cell.contentEditable = "false";
+        cell.classList.remove("editing");
+        fetch("/editData", {
+          method: "POST",
+          body: JSON.stringify({
+            pageID: cell.parentNode.firstChild.getAttribute("headers"),
+            index: cell.parentNode.id,
+            key: cell.previousSibling.getAttribute("headers"),
             newString: validateData.data,
             page: cell.parentNode.parentNode.parentNode.className,
           }),

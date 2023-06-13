@@ -9,7 +9,7 @@
           <select name={{Field}} class="{{Type}} {{Null}} {{Key}} {{../../Field}} FKinput datainput">
             <option value=""></option>
             {{#each ../select}}
-              <option value={{#with ../../id}}{{lookup .. [Field]}}{{/with}}>{{lookup . ../Field}}</option>
+              <option value={{#with ../../id}}{{lookup .. [Field]}}{{/with}}>{{#with ../../id}}{{lookup .. [Field]}}{{/with}} - {{lookup . ../Field}}</option>
             {{/each}}
           </select>
         {{/with}}
