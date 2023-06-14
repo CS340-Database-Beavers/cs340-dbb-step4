@@ -694,8 +694,7 @@ table.addEventListener("mouseover", function () {
     const cell = cells[i];
     if (
       cell.classList.contains("PRI") ||
-      cell.classList.contains("removeicon") ||
-      cell.classList.contains("FKname")
+      cell.classList.contains("removeicon")
     ) {
       continue;
     }
@@ -758,6 +757,51 @@ table.addEventListener("mouseover", function () {
           );
           renderTable(pageSize, 1, 0);
         });
+        dropdown.focus();
+        // console.log("here");
+        activeDropdown = dropdown; // Set the active dropdown
+      } else if (cell.classList.contains("FKname")) {
+        const originalText = cell.previousSibling.innerText;
+        const dropdown = activeDropdown
+          ? activeDropdown.parentNode == cell
+            ? activeDropdown
+            : document
+                .querySelector("select." + cell.previousSibling.headers)
+                .cloneNode(true)
+          : document
+              .querySelector("select." + cell.previousSibling.headers)
+              .cloneNode(true);
+        // console.log(dropdown);
+        activeDropdown = dropdown; // Set the active dropdown
+        for (let option of dropdown.children) {
+          // console.log(originalText);
+          if (option.value === "") {
+            option.remove();
+          }
+          if (option.value === originalText) {
+            option.selected = "selected";
+            break;
+          }
+        }
+        cell.innerHTML = "";
+        cell.appendChild(dropdown);
+        dropdown.addEventListener("change", function () {
+          const selectedOption = this.value; // Get the selected option
+
+          // Store the selected option as text in the cell
+          cell.innerText = selectedOption;
+
+          activeDropdown = null; // Reset the active dropdown
+
+          // Remove the dropdown
+          this.remove();
+          editData("dropdown");
+          const pageSize = parseInt(
+            document.getElementById("entriesDropdown").value
+          );
+          renderTable(pageSize, 1, 0);
+        });
+
         dropdown.focus();
         // console.log("here");
         activeDropdown = dropdown; // Set the active dropdown
@@ -845,6 +889,23 @@ table.addEventListener("mouseover", function () {
             "Content-Type": "application/json",
           },
         });
+      }
+      if (cell.classList.contains("FKname") || validateData.bool) {
+        cell.contentEditable = "false";
+        cell.classList.remove("editing");
+        fetch("/editData", {
+          method: "POST",
+          body: JSON.stringify({
+            pageID: cell.parentNode.firstChild.getAttribute("headers"),
+            index: cell.parentNode.id,
+            key: cell.previousSibling.getAttribute("headers"),
+            newString: validateData.data,
+            page: cell.parentNode.parentNode.parentNode.className,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       } else {
         cell.contentEditable = "false";
         cell.classList.remove("editing");
@@ -887,6 +948,74 @@ table.addEventListener("mouseover", function () {
       // location.reload();
     }
   }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  var helpIcon = document.querySelector(".help-icon");
+  var overlay = document.querySelector(".overlay");
+  var allInfo = {
+    employees:
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new employee. Fields marked with an asterisk (*) are required (cannot be NULL). " +
+      "If ID is left blank, it will auto increment, if Hire Date is left blank it will default to today.\n\n" +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
+      "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "UPDATE: You can double click to edit all editable values (primary keys are not editable). Editing Foreign keys prompts a dropdown selection. " +
+      "Invalid edits will provide an error message at the bottom of the page will force you to try again.\n\n" +
+      "DELETE: There is no reason to delete employees due to record keeping, so the delete button simply marks an employee with status 4 (fired).",
+    projects:
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new project. Fields marked with an asterisk (*) are required (cannot be NULL). " +
+      "If ID is left blank, it will auto increment, if Start Date is left blank it will default to today.\n\n" +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
+      "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "UPDATE: You can double click to edit all editable values (primary keys are not editable). Editing Foreign keys prompts a dropdown selection. " +
+      "Invalid edits will provide an error message at the bottom of the page will force you to try again.\n\n" +
+      "DELETE: There is no reason to delete projects due to record keeping, so the delete button simply edits 'is Ongoing' to 0.",
+    employees_projects:
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new employee project. All fields are required. " +
+      "If Date of Work is left blank it will default to today.\n\n" +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
+      "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "UPDATE: You can double click to edit all editable values. Primary keys are not editable. As a result, only Hours Worked is editable." +
+      "Invalid edits will provide an error message at the bottom of the page will force you to try again. Hours Worked is contained to an integer 0 or more and 24 or less.\n\n" +
+      "DELETE: Clicking the trash can will delete an entry from the table. This cannot be undone.",
+    salaries:
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new employee specific salary. All fields except for ID are required, as ID will auto increment. " +
+      "If Effective Date is left blank it will default to today.\n\n" +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
+      "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "UPDATE: You can double click to edit all editable values (primary keys are not editable). Editing Foreign keys prompts a dropdown selection. " +
+      "Invalid edits will provide an error message at the bottom of the page will force you to try again.\n\n" +
+      "DELETE: Clicking the trash can will delete an entry from the table. This cannot be undone. Errors Deleting will show in an error message at the bottom of the page.",
+    roles:
+      "CREATE: At the bottom of this page, there is a form that you can use to create a new employee role. Role name is required, but ID is optional as ID will auto increment. " +
+      "READ: Clicking the headers will toggle between sorting ascending, descending, and by default. " +
+      "Clicking the filter button will open a row full of fields that you can filter a specific column by. Using the search bar will look for your search key without column preference. " +
+      "You can change the number of entries per page at the top left, or flip through the pages at the bottom left. There is currently a known issue where pagination breaks sorting.\n\n" +
+      "UPDATE: You can double click to edit role names. Primary keys are not editable.\n\n" +
+      "DELETE: Clicking the trash can will delete an entry from the table. This cannot be undone. Errors deleting will show in an error message at the bottom of the page. " +
+      "Deleting a role with that is assigned to at least one an employee will throw an error and will not result in a deletion.",
+  };
+
+  helpIcon.addEventListener("click", function () {
+    const helpInfo = document.getElementById("p-info");
+    console.log(table.classList[0]);
+    helpInfo.innerText = allInfo[table.classList[0]];
+    overlay.style.display = "block";
+  });
+
+  overlay.addEventListener("click", function () {
+    overlay.style.display = "none";
+  });
+
+  overlay.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      overlay.style.display = "none";
+    }
+  });
 });
 
 searchInput.addEventListener("keyup", function () {

@@ -1,14 +1,15 @@
 <form class={{page}} id="dataform">
   <h2>{{title}}</h2>
+  <p style="color: red;">*=required</p>
   {{#each inputData}}
-    <label for={{Field}}>{{lookup ../headerNames [Field]}}:</label>
+    <label for={{Field}} class="{{Type}} {{Null}} {{Key}} FK{{ifEquals Field ../fkInfo}}">{{lookup ../headerNames [Field]}}:</label>
     {{#if (ifEquals Field ../fkInfo)}}
       {{#with (lookup ../fkTable [Field])}}
         {{#with name}}
           <select name={{Field}} class="{{Type}} {{Null}} {{Key}} {{../../Field}} FKinput datainput">
             <option value=""></option>
             {{#each ../select}}
-              <option value={{#with ../../id}}{{lookup .. [Field]}}{{/with}}>{{lookup . ../Field}}</option>
+              <option value={{#with ../../id}}{{lookup .. [Field]}}{{/with}}>{{#with ../../id}}{{lookup .. [Field]}}{{/with}} - {{lookup . ../Field}}</option>
             {{/each}}
           </select>
         {{/with}}

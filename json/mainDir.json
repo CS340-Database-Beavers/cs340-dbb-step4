@@ -1,11 +1,11 @@
 [
   {
     "path": "/employee",
-    "text": "View Employees"
+    "text": "Manage Employees"
   },
   {
     "path": "/new-project",
-    "text": "Add New Project"
+    "text": "Manage Projects"
   },
   {
     "path": "/employees-projects",

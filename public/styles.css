@@ -344,6 +344,31 @@ th:hover {
   padding-right: 20px; /* Adjust the padding as needed */
 }
 
+label.NO::after {
+  content: "*";
+  color: red;
+}
+
+label.date::after {
+  content: "";
+  color: red;
+}
+
+label[for="birthdate"]::after {
+  content: "*";
+  color: red;
+}
+
+label.PRI::after {
+  content: "";
+  color: red;
+}
+
+label.FKtrue::after {
+  content: "*";
+  color: red;
+}
+
 .editing::after {
   content: " 🖉";
   position: absolute;
@@ -406,6 +431,50 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.help-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 33.5px;
+  height: 33.5px;
+  background-color: #f1f1f1;
+  color: #595959;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 6px;
+  font-weight: 900;
+  border: 1px solid #abaeb0;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+.overlay-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.overlay h3 {
+  margin-top: 0;
+}
+
+.overlay p {
+  margin-bottom: 0;
 }
 
 /* Style the error messages displayed on the form */
